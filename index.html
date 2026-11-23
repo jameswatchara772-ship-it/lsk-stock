@@ -1,0 +1,2319 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F766E">
+<title>คลังยา หล่มสัก</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: scan-first single column — one big scan target, everything else one tap away. */
+:root {
+  --bg: #EDF2F1;
+  --surface: #FFFFFF;
+  --surface-2: #F4F8F7;
+  --line: #D5E0DE;
+  --ink: #0F1D1B;
+  --ink-2: #455956;
+  --ink-3: #7A8D8A;
+  --accent: #0F766E;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #D4EEEA;
+  --out: #D9560A;  --out-soft: #FCEADC;
+  --in: #08875A;   --in-soft: #DAF3E7;
+  --count: #2457D6; --count-soft: #E0E9FD;
+  --neg: #C42727;  --neg-soft: #FCE3E3;
+  --low: #A85407;  --low-soft: #FDEFD2;
+  --exp: #7036D9;  --exp-soft: #ECE5FD;
+  --radius: 18px;
+  --shadow: 0 1px 2px rgba(15,29,27,.05), 0 6px 18px rgba(15,29,27,.06);
+  --font-body: "IBM Plex Sans Thai", "Noto Sans Thai", "Leelawadee UI", system-ui, sans-serif;
+  --font-display: "Bai Jamjuree", "IBM Plex Sans Thai", "Noto Sans Thai", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0A1413; --surface: #12201E; --surface-2: #172826; --line: #253A37;
+    --ink: #E6F0EE; --ink-2: #A5B9B6; --ink-3: #728784;
+    --accent: #2BC4B1; --accent-ink: #032C28; --accent-soft: #113B36;
+    --out: #FB8C3C; --out-soft: #3A2312; --in: #34D399; --in-soft: #0E3124;
+    --count: #6EA3FA; --count-soft: #15284A; --neg: #F47272; --neg-soft: #3A1616;
+    --low: #F5B83A; --low-soft: #382A0D; --exp: #A98BFA; --exp-soft: #291E48;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0A1413; --surface: #12201E; --surface-2: #172826; --line: #253A37;
+  --ink: #E6F0EE; --ink-2: #A5B9B6; --ink-3: #728784;
+  --accent: #2BC4B1; --accent-ink: #032C28; --accent-soft: #113B36;
+  --out: #FB8C3C; --out-soft: #3A2312; --in: #34D399; --in-soft: #0E3124;
+  --count: #6EA3FA; --count-soft: #15284A; --neg: #F47272; --neg-soft: #3A1616;
+  --low: #F5B83A; --low-soft: #382A0D; --exp: #A98BFA; --exp-soft: #291E48;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; padding: 0; }
+input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.num { font-variant-numeric: tabular-nums; }
+.muted { color: var(--ink-2); }
+.faint { color: var(--ink-3); }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; line-height: 1.25; }
+
+#app { max-width: 540px; margin: 0 auto; min-height: 100%; padding: 0 16px calc(96px + env(safe-area-inset-bottom)); }
+.demo-bar { margin: 0 -16px; padding: 8px 16px; background: #1F2A29; color: #F2F6F5; font-size: 13px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.demo-bar b { color: #FCD34D; font-weight: 600; }
+.demo-bar .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.demo-bar button { padding: 3px 10px; border-radius: 99px; border: 1px solid #4B5B59; font-size: 12.5px; }
+.demo-bar button.on { background: #FCD34D; color: #1F2A29; border-color: #FCD34D; font-weight: 600; }
+
+.topbar { display: flex; align-items: center; gap: 10px; padding: calc(12px + env(safe-area-inset-top)) 0 10px; }
+.topbar .title { flex: 1; min-width: 0; }
+.topbar .title h2 { font-size: 19px; }
+.topbar .title small { display: block; color: var(--ink-3); font-size: 12.5px; }
+.icon-btn { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--surface); box-shadow: var(--shadow); flex: none; }
+.icon-btn svg { width: 22px; height: 22px; }
+.avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-weight: 700; overflow: hidden; flex: none; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; }
+.stack { display: grid; gap: 12px; }
+.row { display: flex; align-items: center; gap: 10px; }
+.between { justify-content: space-between; }
+.sec-title { font-size: 14px; font-weight: 600; color: var(--ink-2); margin: 18px 4px 8px; display: flex; justify-content: space-between; align-items: baseline; }
+.sec-title button { color: var(--accent); font-size: 14px; font-weight: 600; }
+
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 99px; font-size: 12.5px; font-weight: 600; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
+.chip svg { width: 13px; height: 13px; }
+.chip.had { background: var(--neg); color: #fff; }
+.chip.cold { background: #0284C7; color: #fff; }
+.chip.lock { background: #334155; color: #fff; }
+.chip.neg { background: var(--neg-soft); color: var(--neg); }
+.chip.low { background: var(--low-soft); color: var(--low); }
+.chip.over { background: var(--exp-soft); color: var(--exp); }
+.chip.ok { background: var(--in-soft); color: var(--in); }
+.chip.queue { background: var(--low-soft); color: var(--low); }
+.chip.fail { background: var(--neg-soft); color: var(--neg); }
+
+/* ---------- home ---------- */
+.hello small { color: var(--ink-3); font-size: 13px; }
+.hello h1 { font-size: 24px; }
+.role { display: inline-block; margin-top: 4px; font-size: 12.5px; font-weight: 600; color: var(--accent); background: var(--accent-soft); padding: 2px 10px; border-radius: 99px; }
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 4px; gap: 4px; }
+.seg button { padding: 9px 6px; border-radius: 10px; font-weight: 600; font-size: 15px; color: var(--ink-2); display: flex; gap: 6px; align-items: center; justify-content: center; }
+.seg button svg { width: 18px; height: 18px; }
+.seg button.on { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.seg button.on.m-OUT { color: var(--out); } .seg button.on.m-IN { color: var(--in); } .seg button.on.m-COUNT { color: var(--count); }
+.seg .badge { font-size: 11px; background: var(--neg); color: #fff; border-radius: 99px; padding: 0 6px; line-height: 17px; }
+
+.picker { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; text-align: left; }
+.picker .lbl { font-size: 12.5px; color: var(--ink-3); display: block; }
+.picker .val { font-weight: 600; font-size: 16px; display: block; }
+.picker .grow { flex: 1; min-width: 0; }
+.picker svg { width: 20px; height: 20px; color: var(--ink-3); }
+.picker.unset .val { color: var(--neg); }
+
+.scan-btn { --c: var(--out); width: 100%; border-radius: 24px; padding: 22px 20px; background: var(--c); color: #fff; display: flex; align-items: center; gap: 18px; text-align: left; box-shadow: 0 10px 24px color-mix(in srgb, var(--c) 35%, transparent); }
+.scan-btn.m-IN { --c: var(--in); } .scan-btn.m-COUNT { --c: var(--count); }
+.scan-btn .ico { width: 64px; height: 64px; border-radius: 18px; background: rgba(255,255,255,.18); display: grid; place-items: center; flex: none; }
+.scan-btn .ico svg { width: 38px; height: 38px; stroke-width: 2.2; }
+.scan-btn b { font-family: var(--font-display); font-size: 24px; display: block; line-height: 1.2; }
+.scan-btn small { opacity: .9; font-size: 14px; }
+.scan-btn:active { transform: scale(.985); }
+.search-fake { display: flex; align-items: center; gap: 10px; width: 100%; padding: 13px 14px; background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); color: var(--ink-3); text-align: left; }
+.search-fake svg { width: 20px; height: 20px; }
+
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.tile { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); padding: 12px; text-align: left; border-top: 4px solid var(--c); }
+.tile b { font-family: var(--font-display); font-size: 26px; display: block; color: var(--c); line-height: 1.15; }
+.tile span { font-size: 12.5px; color: var(--ink-2); line-height: 1.3; display: block; }
+.tile.t-neg { --c: var(--neg); } .tile.t-low { --c: var(--low); } .tile.t-exp { --c: var(--exp); }
+
+/* ---------- list rows ---------- */
+.list { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.item { display: flex; gap: 12px; align-items: center; padding: 12px 14px; width: 100%; text-align: left; border-bottom: 1px solid var(--line); }
+.item:last-child { border-bottom: 0; }
+.item .main { flex: 1; min-width: 0; }
+.item .name { font-weight: 600; font-size: 15px; line-height: 1.35; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.item .sub { font-size: 12.5px; color: var(--ink-3); margin-top: 2px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.item .right { text-align: right; flex: none; }
+.item .right b { font-size: 16px; font-variant-numeric: tabular-nums; display: block; }
+.item .right small { font-size: 12px; color: var(--ink-3); }
+.item.void .name, .item.void .right b { text-decoration: line-through; color: var(--ink-3); }
+.ztile { width: 44px; height: 44px; border-radius: 12px; background: var(--z); color: #fff; display: grid; place-items: center; flex: none; font-family: var(--font-display); font-weight: 700; line-height: 1; text-align: center; }
+.ztile b { font-size: 18px; display: block; }
+.ztile small { font-size: 10px; font-family: var(--font-mono); opacity: .92; display: block; margin-top: 2px; }
+.tx-ico { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; flex: none; }
+.tx-ico svg { width: 20px; height: 20px; }
+.tx-OUT { background: var(--out-soft); color: var(--out); } .tx-IN { background: var(--in-soft); color: var(--in); } .tx-COUNT { background: var(--count-soft); color: var(--count); }
+.day-head { font-size: 13px; font-weight: 600; color: var(--ink-3); padding: 14px 6px 6px; }
+.add-btn { width: 38px; height: 38px; border-radius: 12px; border: 1.5px solid var(--line); display: grid; place-items: center; color: var(--accent); flex: none; }
+.add-btn.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.add-btn svg { width: 18px; height: 18px; }
+.empty { padding: 28px 16px; text-align: center; color: var(--ink-3); font-size: 14px; }
+
+/* ---------- search ---------- */
+.search-input { display: flex; align-items: center; gap: 8px; background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); padding: 4px 6px 4px 14px; }
+.search-input svg { width: 20px; height: 20px; color: var(--ink-3); flex: none; }
+.search-input input { flex: 1; border: 0; outline: 0; background: none; padding: 10px 0; font-size: 17px; min-width: 0; }
+.zfilter { display: flex; gap: 6px; overflow-x: auto; padding: 10px 2px 2px; scrollbar-width: none; }
+.zfilter button { flex: none; padding: 5px 12px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line); font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.zfilter button.on { background: var(--z, var(--accent)); border-color: var(--z, var(--accent)); color: #fff; }
+
+/* ---------- drug ---------- */
+.drug-name { font-size: 21px; overflow-wrap: anywhere; }
+.badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.info2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.bal-card .lbl, .loc-card .lbl { font-size: 12.5px; color: var(--ink-3); }
+.bal-num { font-family: var(--font-display); font-size: 36px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.bal-num.neg { color: var(--neg); }
+.bal-unit { font-size: 14px; color: var(--ink-2); }
+.minmax { height: 6px; border-radius: 99px; background: var(--surface-2); position: relative; margin: 10px 0 4px; overflow: visible; }
+.minmax .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; background: var(--c, var(--in)); }
+.minmax .tick { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink-3); }
+.mm-legend { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--ink-3); }
+.loc-card { --z: #475569; position: relative; overflow: hidden; }
+.loc-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--z); }
+.loc-code { font-family: var(--font-mono); font-size: 22px; font-weight: 600; color: var(--z); letter-spacing: .5px; }
+.loc-line { font-size: 13px; color: var(--ink-2); line-height: 1.4; }
+.shelf { display: block; margin-top: 8px; }
+.fefo { display: flex; gap: 10px; align-items: center; background: var(--exp-soft); color: var(--exp); border-radius: 14px; padding: 10px 12px; font-size: 14px; }
+.fefo svg { width: 20px; height: 20px; flex: none; }
+.fefo b { font-weight: 700; }
+.warn { display: flex; gap: 10px; align-items: flex-start; background: var(--low-soft); color: var(--low); border-radius: 14px; padding: 10px 12px; font-size: 14px; line-height: 1.45; }
+.warn.danger { background: var(--neg-soft); color: var(--neg); }
+.warn svg { width: 20px; height: 20px; flex: none; margin-top: 1px; }
+
+.qty-box { --c: var(--out); background: var(--surface); border: 2px solid var(--c); border-radius: 18px; padding: 10px 14px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 10px; }
+.qty-box.m-IN { --c: var(--in); } .qty-box.m-COUNT { --c: var(--count); }
+.qty-box .q { font-family: var(--font-display); font-size: 40px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; color: var(--c); min-height: 44px; }
+.qty-box .q.ph { color: var(--ink-3); font-weight: 600; }
+.qty-box .u { font-size: 15px; color: var(--ink-2); font-weight: 600; text-align: right; }
+.qty-box .conv { grid-column: 1 / -1; font-size: 13px; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.qty-box .conv b { color: var(--ink); }
+.qty-box .conv .bad { color: var(--neg); font-weight: 600; }
+.units { --c: var(--out); --cs: var(--out-soft); display: flex; gap: 8px; flex-wrap: wrap; padding-top: 6px; }
+.units.m-IN { --c: var(--in); --cs: var(--in-soft); } .units.m-COUNT { --c: var(--count); --cs: var(--count-soft); }
+.unit { position: relative; min-width: 78px; min-height: 52px; padding: 6px 12px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface); display: grid; justify-items: center; align-content: center; line-height: 1.2; }
+.unit b { font-size: 16px; } .unit small { font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.unit.on { border-color: var(--c); background: var(--cs); color: var(--c); }
+.unit.on small { color: var(--c); }
+.unit .cnt { position: absolute; top: -9px; right: -7px; background: var(--c); color: #fff; font-size: 12px; font-weight: 700; border-radius: 99px; padding: 0 7px; line-height: 20px; font-variant-numeric: tabular-nums; }
+.unit.add { min-width: 52px; border-style: dashed; color: var(--ink-3); }
+.unit.add svg { width: 20px; height: 20px; }
+.qty-box .breakdown { grid-column: 1 / -1; font-size: 15px; color: var(--ink); background: var(--surface-2); border-radius: 10px; padding: 6px 10px; font-variant-numeric: tabular-nums; }
+.qty-box .breakdown b { color: var(--c); font-size: 17px; }
+.pack-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto 92px auto 40px; gap: 6px; align-items: center; font-weight: 600; }
+.pack-row input { width: 100%; min-width: 0; padding: 10px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); font-size: 16px; outline: 0; }
+.pack-row input:focus { border-color: var(--accent); }
+.pack-row input.bad { border-color: var(--neg); }
+.pack-row .icon-btn { width: 40px; height: 40px; box-shadow: none; background: var(--surface-2); }
+.pack-row .icon-btn svg { width: 18px; height: 18px; }
+.pack-preview { background: var(--surface); border: 1.5px dashed var(--line); border-radius: 12px; padding: 8px 12px; font-size: 14px; }
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.keypad button { height: 54px; border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); font-family: var(--font-display); font-size: 24px; font-weight: 600; }
+.keypad button:active { background: var(--surface-2); transform: scale(.97); }
+.keypad button.fn { font-family: var(--font-body); font-size: 15px; color: var(--ink-2); background: var(--surface-2); box-shadow: none; }
+.keypad button svg { width: 24px; height: 24px; }
+.field { display: grid; gap: 4px; align-content: start; }
+.field label { font-size: 12.5px; color: var(--ink-3); font-weight: 600; }
+.field input, .field select, .field textarea { width: 100%; padding: 11px 12px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); font-size: 16px; outline: 0; }
+.field input:focus, .field textarea:focus { border-color: var(--accent); }
+.field .hint { font-size: 12.5px; color: var(--ink-3); }
+.field .hint.ok { color: var(--in); } .field .hint.bad { color: var(--neg); }
+.fields2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 54px; border-radius: 16px; font-weight: 700; font-size: 17px; padding: 10px 16px; background: var(--accent); color: var(--accent-ink); }
+.btn svg { width: 22px; height: 22px; }
+.btn.m-OUT { background: var(--out); color: #fff; } .btn.m-IN { background: var(--in); color: #fff; } .btn.m-COUNT { background: var(--count); color: #fff; }
+.btn.ghost { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.btn.soft { background: var(--surface-2); color: var(--ink-2); }
+.btn.danger { background: var(--neg-soft); color: var(--neg); }
+.btn.sm { min-height: 42px; font-size: 15px; border-radius: 12px; }
+.btn[disabled] { opacity: .45; pointer-events: none; }
+.btns2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.link { color: var(--accent); font-weight: 600; font-size: 14px; display: inline-flex; gap: 4px; align-items: center; }
+.link svg { width: 16px; height: 16px; }
+
+/* ---------- tab bar ---------- */
+.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--line); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); }
+.tabbar .in { max-width: 540px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); align-items: end; }
+.tabbar button { display: grid; justify-items: center; gap: 2px; font-size: 11.5px; color: var(--ink-3); padding: 4px 0; position: relative; }
+.tabbar button svg { width: 24px; height: 24px; }
+.tabbar button.on { color: var(--accent); font-weight: 600; }
+.tabbar .fab { width: 60px; height: 60px; border-radius: 20px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; margin: -22px auto 0; box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 40%, transparent); }
+.tabbar .fab svg { width: 30px; height: 30px; }
+.tabbar .dot { position: absolute; top: 0; right: 22%; min-width: 18px; height: 18px; border-radius: 99px; background: var(--neg); color: #fff; font-size: 11px; display: grid; place-items: center; padding: 0 4px; }
+
+/* ---------- sheets / toast ---------- */
+.scrim { position: fixed; inset: 0; background: rgba(5,15,14,.45); z-index: 40; display: flex; align-items: flex-end; justify-content: center; animation: fade .15s ease; }
+.sheet { background: var(--bg); width: 100%; max-width: 540px; max-height: 92%; overflow-y: auto; border-radius: 24px 24px 0 0; padding: 10px 16px calc(18px + env(safe-area-inset-bottom)); animation: up .2s ease; }
+.sheet .grab { width: 44px; height: 5px; border-radius: 9px; background: var(--line); margin: 0 auto 12px; }
+.sheet h3 { font-size: 19px; margin-bottom: 4px; }
+.opt-list { display: grid; gap: 8px; }
+.opt { display: flex; justify-content: space-between; align-items: center; padding: 14px; border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); font-weight: 600; text-align: left; width: 100%; }
+.opt.on { outline: 2.5px solid var(--accent); color: var(--accent); }
+.opt small { font-weight: 400; color: var(--ink-3); }
+.reason { display: flex; gap: 6px; flex-wrap: wrap; }
+.reason button { padding: 7px 12px; border-radius: 99px; border: 1.5px solid var(--line); background: var(--surface); font-size: 14px; }
+.reason button.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+.result-ico { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; margin: 4px auto 8px; }
+.result-ico svg { width: 34px; height: 34px; stroke-width: 2.6; }
+.result-ico.ok { background: var(--in-soft); color: var(--in); }
+.result-ico.wait { background: var(--low-soft); color: var(--low); }
+.result-ico.bad { background: var(--neg-soft); color: var(--neg); }
+.result-ico.spin svg { animation: spin 1s linear infinite; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 14.5px; }
+.kv dt { color: var(--ink-3); } .kv dd { margin: 0; font-weight: 600; text-align: right; }
+.toast { position: fixed; left: 50%; bottom: calc(92px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 60; background: #0F1D1B; color: #fff; padding: 10px 16px; border-radius: 14px; font-size: 14.5px; max-width: calc(100% - 32px); box-shadow: 0 8px 24px rgba(0,0,0,.25); animation: up .2s ease; }
+.toast.bad { background: var(--neg); }
+.cam { position: fixed; inset: 0; z-index: 50; background: #000; display: grid; grid-template-rows: auto 1fr auto; color: #fff; }
+.cam header, .cam footer { padding: calc(14px + env(safe-area-inset-top)) 16px 14px; display: flex; justify-content: space-between; align-items: center; }
+.cam footer { padding-bottom: calc(18px + env(safe-area-inset-bottom)); justify-content: center; }
+.cam #reader { width: 100%; height: 100%; overflow: hidden; position: relative; }
+.cam video { width: 100%; height: 100%; object-fit: cover; }
+.cam .frame { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+.cam .frame div { width: 64vmin; height: 64vmin; border: 3px solid rgba(255,255,255,.85); border-radius: 22px; box-shadow: 0 0 0 100vmax rgba(0,0,0,.35); }
+.sim-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.sim-grid button { background: #fff; color: #0F1D1B; border-radius: 12px; padding: 8px 6px; display: grid; justify-items: center; gap: 4px; box-shadow: var(--shadow); font-size: 11px; line-height: 1.25; border-top: 5px solid var(--z); }
+.sim-grid button svg { stroke: none; }
+.sim-grid .nm { overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-align: center; }
+table.card-t { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+table.card-t th { text-align: left; font-size: 12px; color: var(--ink-3); font-weight: 600; padding: 8px 6px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--surface); }
+table.card-t td { padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.card-t td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.card-t tr.void td { color: var(--ink-3); text-decoration: line-through; }
+.overflow { overflow-x: auto; }
+.perm { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+.perm:last-child { border-bottom: 0; }
+.perm .y { color: var(--in); font-weight: 700; } .perm .n { color: var(--ink-3); }
+.switch { width: 48px; height: 28px; border-radius: 99px; background: var(--line); position: relative; flex: none; }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: left .15s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+.switch.on { background: var(--accent); } .switch.on::after { left: 23px; }
+.center-screen { min-height: 70vh; display: grid; place-items: center; text-align: center; padding: 24px 8px; }
+.center-screen .big-ico { width: 76px; height: 76px; border-radius: 24px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; margin: 0 auto 14px; }
+.center-screen .big-ico svg { width: 40px; height: 40px; }
+.spinner { width: 34px; height: 34px; border-radius: 50%; border: 3.5px solid var(--line); border-top-color: var(--accent); animation: spin .8s linear infinite; margin: 0 auto 12px; }
+.err-box { text-align: left; background: var(--neg-soft); color: var(--neg); border-radius: 12px; padding: 10px 12px; font-size: 13.5px; font-family: var(--font-mono); white-space: pre-wrap; word-break: break-word; }
+/* ---------- v1.2: รูปแบบยา · นาฬิกาทราย · หลักฐานรับเข้า ---------- */
+.fi { stroke-width: 1.8; }
+.ftile { --z: #475569; width: 44px; height: 44px; border-radius: 12px; background: var(--z); color: #fff; display: grid; place-items: center; flex: none; position: relative; }
+.ftile svg { width: 28px; height: 28px; }
+.ftile.lg { width: 56px; height: 56px; border-radius: 16px; } .ftile.lg svg { width: 36px; height: 36px; }
+.ftile .hgdot { position: absolute; right: -6px; bottom: -6px; width: 21px; height: 21px; border-radius: 50%; background: var(--low); color: #fff; display: grid; place-items: center; border: 2px solid var(--surface); }
+.ftile .hgdot svg { width: 13px; height: 13px; stroke-width: 2.4; }
+.lchip { --z: #475569; font-family: var(--font-mono); font-weight: 600; font-size: 12px; color: var(--z); background: color-mix(in srgb, var(--z) 13%, transparent); border-radius: 6px; padding: 0 6px; line-height: 19px; white-space: nowrap; }
+.drug-head { display: flex; gap: 12px; align-items: flex-start; }
+.drug-head .grow { flex: 1; min-width: 0; }
+.chip.form { background: color-mix(in srgb, var(--z) 14%, transparent); color: var(--z); }
+.chip.form svg { width: 15px; height: 15px; stroke-width: 1.9; }
+.chip.wait { background: var(--low-soft); color: var(--low); }
+.chip.ev { background: var(--accent-soft); color: var(--accent); }
+.hg { overflow: visible; }
+.hg .st, .hg .sb { fill: currentColor; stroke: none; transform-box: fill-box; transform-origin: 50% 100%; }
+.hg .st { animation: hgT 4s ease-in infinite; } .hg .sb { animation: hgB 4s ease-in infinite; }
+.hg .ss { stroke-width: 1.4; stroke-dasharray: 1.1 1.5; animation: hgS .45s linear infinite; }
+.hg.flip { transform-origin: 50% 50%; animation: hgF 4s ease-in-out infinite; }
+@keyframes hgT { 0% { transform: scaleY(1); } 86%, 100% { transform: scaleY(0); } }
+@keyframes hgB { 0% { transform: scaleY(.06); } 86%, 100% { transform: scaleY(1); } }
+@keyframes hgS { to { stroke-dashoffset: -2.6; } }
+@keyframes hgF { 0%, 88% { transform: rotate(0); } 100% { transform: rotate(180deg); } }
+.pa-card { --c: var(--low); --cs: var(--low-soft); display: flex; gap: 14px; align-items: center; width: 100%; padding: 12px 14px; border-radius: 18px; background: var(--cs); color: var(--c); text-align: left; border: 1.5px solid color-mix(in srgb, var(--c) 30%, transparent); }
+.pa-card.late { --c: var(--neg); --cs: var(--neg-soft); }
+.pa-card .hgw { width: 50px; height: 50px; border-radius: 15px; background: var(--c); color: #fff; display: grid; place-items: center; flex: none; }
+.pa-card .hgw svg { width: 30px; height: 30px; }
+.pa-card .grow { flex: 1; min-width: 0; }
+.pa-card b { display: block; font-family: var(--font-display); font-size: 18px; line-height: 1.25; }
+.pa-card small { display: block; color: var(--ink-2); font-size: 13px; line-height: 1.35; }
+.pa-card > svg { width: 20px; height: 20px; flex: none; }
+.pa-banner { --c: var(--low); --cs: var(--low-soft); display: flex; gap: 10px; align-items: center; background: var(--cs); color: var(--c); border-radius: 14px; padding: 10px 12px; font-size: 14px; line-height: 1.4; }
+.pa-banner.late { --c: var(--neg); --cs: var(--neg-soft); }
+.pa-banner > svg { width: 26px; height: 26px; flex: none; }
+.pa-banner .grow { flex: 1; min-width: 0; }
+.pa-banner small { color: var(--ink-2); }
+.pa-banner .btn { width: auto; flex: none; padding: 8px 12px; min-height: 40px; font-size: 14px; }
+.pa-time { --c: var(--low); color: var(--c); font-weight: 700; font-size: 13.5px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.pa-time.late { --c: var(--neg); }
+.pa-time svg { width: 16px; height: 16px; }
+.add-btn.ok { color: var(--in); border-color: color-mix(in srgb, var(--in) 45%, var(--line)); }
+.rx { background: var(--surface); border-radius: 18px; box-shadow: var(--shadow); padding: 12px; display: grid; gap: 10px; }
+.rx-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: var(--ink-2); }
+.rx-head > span { display: inline-flex; gap: 6px; align-items: center; min-width: 0; }
+.rx-head svg { width: 18px; height: 18px; flex: none; }
+.ev-cta { display: flex; gap: 12px; align-items: center; width: 100%; padding: 12px; border-radius: 14px; border: 2px dashed color-mix(in srgb, var(--in) 45%, var(--line)); color: var(--in); text-align: left; background: color-mix(in srgb, var(--in-soft) 50%, var(--surface)); }
+.ev-cta svg { width: 30px; height: 30px; flex: none; }
+.ev-cta b { display: block; font-size: 16px; } .ev-cta small { display: block; color: var(--ink-2); font-size: 12.5px; line-height: 1.35; }
+.ev-strip { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 4px; scrollbar-width: none; }
+.ev-thumb { position: relative; width: 76px; height: 76px; border-radius: 12px; overflow: hidden; flex: none; background: var(--surface-2); display: grid; place-items: center; }
+.ev-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ev-thumb .st { position: absolute; left: 0; right: 0; bottom: 0; font-size: 10.5px; font-weight: 600; color: #fff; background: rgba(0,0,0,.58); padding: 2px 4px; text-align: center; line-height: 1.3; }
+.ev-thumb.err .st { background: var(--neg); } .ev-thumb.ok .st { background: color-mix(in srgb, var(--in) 88%, #000); }
+.ev-thumb .spinner { width: 22px; height: 22px; border-width: 3px; margin: 0; }
+.ev-add { width: 76px; height: 76px; border-radius: 12px; border: 2px dashed var(--line); color: var(--in); display: grid; place-items: center; align-content: center; gap: 2px; font-size: 11.5px; font-weight: 600; flex: none; }
+.ev-add svg { width: 24px; height: 24px; }
+.read-line { border-radius: 14px; padding: 10px 12px; background: var(--in-soft); display: grid; gap: 6px; font-size: 14px; line-height: 1.45; }
+.read-line.miss { background: var(--low-soft); color: var(--low); }
+.read-line .nm { font-weight: 600; color: var(--ink); overflow-wrap: anywhere; }
+.read-line .vals { display: flex; gap: 6px 12px; flex-wrap: wrap; color: var(--ink-2); }
+.read-line .vals b { color: var(--ink); }
+.read-line .btn { min-height: 40px; font-size: 15px; }
+.read-line input { width: 96px; padding: 6px 8px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--surface); font-size: 16px; }
+.src { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; color: var(--exp); background: var(--exp-soft); border-radius: 6px; padding: 0 6px; line-height: 18px; white-space: nowrap; vertical-align: 1px; }
+.src.bc { color: var(--in); background: var(--in-soft); }
+.field input.from-img { border-color: var(--exp); background: color-mix(in srgb, var(--exp-soft) 45%, var(--surface)); }
+.others { display: grid; gap: 6px; }
+.others .o { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 12px; background: var(--surface-2); text-align: left; width: 100%; font-size: 13.5px; }
+.others .o .grow { flex: 1; min-width: 0; }
+.others .o b { display: block; font-size: 14px; overflow-wrap: anywhere; }
+.others .o small { color: var(--ink-3); }
+.others .o .ftile { width: 32px; height: 32px; border-radius: 9px; } .others .o .ftile svg { width: 21px; height: 21px; }
+.others .o.done { opacity: .6; }
+.others .o > svg { width: 18px; height: 18px; flex: none; color: var(--ink-3); }
+.viewer { position: fixed; inset: 0; z-index: 70; background: #000; display: grid; grid-template-rows: auto 1fr auto; color: #fff; }
+.viewer header, .viewer footer { padding: calc(12px + env(safe-area-inset-top)) 14px 12px; display: flex; gap: 10px; align-items: center; justify-content: space-between; font-size: 13.5px; }
+.viewer footer { padding-bottom: calc(14px + env(safe-area-inset-bottom)); color: rgba(255,255,255,.75); }
+.viewer .pic { overflow: auto; display: grid; place-items: center; }
+.viewer img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.fgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.fgrid button { background: var(--surface); border-radius: 12px; padding: 10px 4px 8px; display: grid; justify-items: center; gap: 4px; font-size: 11.5px; line-height: 1.25; box-shadow: var(--shadow); text-align: center; color: var(--ink-2); }
+.fgrid button.on { outline: 2.5px solid var(--accent); color: var(--accent); }
+.fgrid svg { width: 30px; height: 30px; color: var(--ink); }
+.fgrid button.on svg { color: var(--accent); }
+.toast .act { margin-left: 12px; color: #FCD34D; font-weight: 700; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes up { from { transform: translateY(24px); opacity: 0; } }
+@keyframes fade { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+@media (max-width: 370px) { .tiles { grid-template-columns: 1fr 1fr 1fr; gap: 6px; } .tile b { font-size: 22px; } .info2 { grid-template-columns: 1fr; } .bal-num { font-size: 32px; } }
+@media print {
+  body { background: #fff; color: #000; }
+  .tabbar, .topbar .icon-btn, .demo-bar, .no-print { display: none !important; }
+  #app { max-width: none; padding: 0; }
+  .card, .list { box-shadow: none; border: 1px solid #ccc; }
+  table.card-t th { position: static; }
+}
+</style>
+</head>
+<body>
+<div id="app"><div class="center-screen"><div><div class="spinner"></div><div class="muted">กำลังเปิดระบบคลังยา…</div></div></div></div>
+<nav class="tabbar" id="tabbar" hidden></nav>
+<div id="layer"></div>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js" charset="utf-8"></script>
+<script>
+"use strict";
+/* ========================= ตั้งค่า (แก้ 2 บรรทัดนี้หลังติดตั้ง) ========================= */
+const CONFIG = {
+  LIFF_ID: "",        // เช่น "2001234567-AbCdEfGh"  (LINE Developers > LIFF)
+  API_URL: "",        // URL ของ Apps Script Web app ที่ลงท้าย /exec
+  DEMO_DATA_URL: ""   // ปล่อยว่างในการใช้งานจริง
+};
+const APP_VERSION = "1.2.0";
+/* ตัวอ่านบาร์โค้ดบนภาพถ่าย (ZXing WebAssembly) — วางไฟล์ 2 ไฟล์นี้ไว้โฟลเดอร์เดียวกับ index.html */
+const ZXING = /*ZXING*/{ js: "zxing-reader.js", wasm: "zxing_reader.wasm" }/*END*/;
+
+/* ========================= ค่าคงที่ ========================= */
+const ZONES = {"A": ["ยาเม็ด · แคปซูล · ผงซอง", "ยาเม็ด", "ตู้", 5, 8, "#2563EB"], "B": ["ยาน้ำรับประทาน", "ยาน้ำ", "ตู้", 5, 6, "#7C3AED"], "C": ["ยาฉีด (อุณหภูมิห้อง)", "ยาฉีด", "ตู้", 5, 8, "#DC2626"], "D": ["สารน้ำ · น้ำยาล้างไต · น้ำล้างแผล", "สารน้ำ", "ชั้นวาง", 4, 3, "#0D9488"], "E": ["ยาใช้ภายนอก · ตา หู จมูก · ยาพ่นสูด", "ยาภายนอก", "ตู้", 5, 8, "#EA580C"], "H": ["ยาสมุนไพร · ยาแผนไทย", "สมุนไพร", "ตู้", 5, 8, "#65A30D"], "R": ["ตู้เย็น 2–8 °C (วัคซีน · อินซูลิน · ยาเย็น)", "ตู้เย็น", "ตู้เย็น", 5, 6, "#0284C7"], "N": ["ตู้ยาควบคุม (ล็อกกุญแจ) · ยาเสพติด/วัตถุออกฤทธิ์", "ยาควบคุม", "ตู้ล็อก", 4, 8, "#334155"]};
+const T = { OUT: "จ่ายออก", IN: "รับเข้า", COUNT: "ตรวจนับ" };
+const MON = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+const EDIT_REASONS = ["จำนวนผิด", "เลือกหน่วยเบิกผิด", "สแกนผิดรายการ", "บันทึกซ้ำ", "Lot/วันหมดอายุผิด", "อื่น ๆ"];
+const I = {
+  scan: '<svg viewBox="0 0 24 24"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M7 12h10"/></svg>',
+  search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>',
+  home: '<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+  clock: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  list: '<svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2"/></svg>',
+  back: '<svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>',
+  more: '<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>',
+  out: '<svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
+  in: '<svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg>',
+  count: '<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+  chev: '<svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>',
+  down: '<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>',
+  x: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  check: '<svg viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg>',
+  del: '<svg viewBox="0 0 24 24"><path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1z"/><path d="m13 9 5 6M18 9l-5 6"/></svg>',
+  pin: '<svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
+  cold: '<svg viewBox="0 0 24 24"><path d="M12 2v20M4 7l16 10M4 17 20 7"/></svg>',
+  lock: '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  alert: '<svg viewBox="0 0 24 24"><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>',
+  hour: '<svg viewBox="0 0 24 24"><path d="M6 2h12M6 22h12M7 2v4l5 6-5 6v4M17 2v4l-5 6 5 6v4"/></svg>',
+  edit: '<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13 7 4 4"/></svg>',
+  print: '<svg viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg>',
+  cloud: '<svg viewBox="0 0 24 24"><path d="M7 18a5 5 0 1 1 1-9.9A6 6 0 0 1 19 10a4 4 0 0 1 0 8z"/></svg>',
+  refresh: '<svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>',
+  plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  user: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+  card: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>',
+  keyboard: '<svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg>',
+  camera: '<svg viewBox="0 0 24 24"><path d="M4 8a2 2 0 0 1 2-2h1.6l1.2-2h6.4l1.2 2H18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.6"/></svg>'
+};
+
+/* ========================= utils ========================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmtN = n => { const v = Math.round(Number(n || 0) * 100) / 100; return v.toLocaleString("en-US", { maximumFractionDigits: 2 }); };
+const round2 = n => Math.round(Number(n) * 100) / 100;
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("lsk_" + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("lsk_" + k, JSON.stringify(v)); } catch (e) { /* storage อาจถูกปิด */ } }
+};
+function fmtDate(d) { d = new Date(d); return d.getDate() + " " + MON[d.getMonth()] + " " + String(d.getFullYear() + 543).slice(-2); }
+function fmtTime(d) { d = new Date(d); return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); }
+function dayKey(d) { d = new Date(d); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+function dayLabel(d) {
+  const k = dayKey(d), now = new Date();
+  if (k === dayKey(now)) return "วันนี้";
+  if (k === dayKey(now.getTime() - 86400000)) return "เมื่อวาน";
+  return fmtDate(d);
+}
+function fmtExp(iso) {
+  if (!iso) return "-";
+  const m = String(iso).match(/^(\d{4})-(\d{2})/);
+  return m ? m[2] + "/" + (Number(m[1]) + 543) : iso;
+}
+function monthsLeft(iso) {
+  if (!iso) return null;
+  const d = new Date(iso + (iso.length === 7 ? "-28" : "")), now = new Date();
+  return Math.round(((d - now) / 86400000) / 30.4 * 10) / 10;
+}
+/** "0370" / "03/70" / "03/2570" / "3/2027" → "2027-03" (ปี 2 หลัก ≥50 ถือเป็น พ.ศ.) */
+function parseExp(s) {
+  s = String(s || "").replace(/\s/g, "");
+  if (!s) return "";
+  let m = s.match(/^(\d{1,2})[\/\-\.]?(\d{2}|\d{4})$/);
+  if (!m) return null;
+  let mo = +m[1], y = +m[2];
+  if (m[2].length === 2) y = y >= 50 ? 2500 + y - 543 : 2000 + y;
+  else if (y > 2400) y -= 543;
+  if (mo < 1 || mo > 12 || y < 2020 || y > 2100) return null;
+  return y + "-" + String(mo).padStart(2, "0");
+}
+const norm = s => String(s || "").toLowerCase().replace(/[\s\-\.\(\)\*,\/\[\]%+]+/g, "");
+function uid() {
+  const d = new Date(), p = n => String(n).padStart(2, "0");
+  return "T" + String(d.getFullYear()).slice(2) + p(d.getMonth() + 1) + p(d.getDate()) + "-" + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds()) +
+    "-" + Math.random().toString(36).slice(2, 7);
+}
+function parseLoc(l) {
+  const m = String(l || "").match(/^([A-Z])(\d{2})-(\d{1,2})-(\d{1,2})$/);
+  return m ? { z: m[1], rack: +m[2], level: +m[3], slot: +m[4] } : null;
+}
+function locLine(d) {
+  const p = parseLoc(d.l);
+  if (!p) return d.l ? esc(d.l) : "ยังไม่กำหนดตำแหน่ง";
+  const z = ZONES[p.z] || ["", "", "ตู้"];
+  return z[2] + " " + p.z + String(p.rack).padStart(2, "0") + " · ชั้น " + p.level + " · ช่อง " + p.slot;
+}
+function status(d) {
+  if (d.b < 0) return ["neg", "ติดลบ · รอลงรับ"];
+  if (d.mn > 0 && d.b < d.mn) return ["low", "ต่ำกว่า MIN"];
+  if (d.mx > 0 && d.b > d.mx) return ["over", "เกิน MAX"];
+  return ["ok", "ปกติ"];
+}
+function stockOf(d) { return d && d.p && S.drugs.get(d.p) ? S.drugs.get(d.p) : d; }
+function greet() { const h = new Date().getHours(); return h < 11 ? "อรุณสวัสดิ์" : h < 16 ? "สวัสดีตอนบ่าย" : "สวัสดีตอนเย็น"; }
+function allocateLots(lots, bal) {
+  const list = (lots || []).map(l => Object.assign({}, l)).sort((a, b) => (b.exp || "9999") < (a.exp || "9999") ? -1 : 1);
+  let left = Math.max(0, bal);
+  list.forEach(l => { const t = Math.min(l.qty, left); l.left = round2(t); left = round2(left - t); });
+  const out = list.filter(l => l.left > 0).sort((a, b) => (a.exp || "9999") < (b.exp || "9999") ? -1 : 1);
+  if (left > 0) out.unshift({ lot: "", exp: "", qty: left, left, unknown: true });
+  return out;
+}
+
+/* ---------- หน่วยบรรจุ (หน่วยใหญ่) ---------- */
+// หน่วยที่กดนับได้: หน่วยใหญ่เรียงจากใหญ่ → เล็ก แล้วตามด้วยหน่วยนับ (k = "base")
+function unitsOf(s) {
+  return (s.ps || []).slice().sort((a, b) => b.q - a.q).map(p => ({ n: p.n, q: p.q, k: p.n + ":" + p.q })).concat([{ n: s.u, q: 1, k: "base" }]);
+}
+const qtyEntered = D => Object.keys(D.counts).some(k => D.counts[k] !== "");
+function qtyTotal(D, s) { return round2(unitsOf(s).reduce((t, u) => t + Number(D.counts[u.k] || 0) * u.q, 0)); }
+function qtyBreakdown(D, s, withSize) {
+  return unitsOf(s).filter(u => Number(D.counts[u.k]) > 0).map(u => fmtN(D.counts[u.k]) + " " + u.n + (withSize && u.q > 1 ? " (×" + fmtN(u.q) + ")" : "")).join(" + ");
+}
+function packText(s) { return (s.ps || []).slice().sort((a, b) => a.q - b.q).map(p => "1 " + p.n + " = " + fmtN(p.q) + " " + s.u).join(" · "); }
+/** แตกยอดเป็นหน่วยใหญ่แบบแม่นยำ (ไม่ปัดเศษ) เช่น 10,535 → 21 กล่อง · 3 แผง · 5 เม็ด */
+function packBreak(total, s) {
+  let left = Math.max(0, total);
+  const parts = [];
+  unitsOf(s).filter(u => u.q > 1).forEach(u => { const k = Math.floor(left / u.q); if (k) { parts.push(fmtN(k) + " " + u.n); left = round2(left - k * u.q); } });
+  if (left || !parts.length) parts.push(fmtN(left) + " " + s.u);
+  return parts.join(" · ");
+}
+function packPresets(u) {
+  const t = String(u || "").toLowerCase();
+  if (/เม็ด|แคปซูล|tab|cap/.test(t)) return [["แผง", 10], ["แผง", 7], ["แผง", 14], ["กล่อง", 100], ["กล่อง", 500], ["กล่อง", 1000], ["ขวด", 500], ["ขวด", 1000]];
+  if (/ซอง/.test(t)) return [["กล่อง", 10], ["กล่อง", 20], ["กล่อง", 50], ["กล่อง", 100]];
+  if (/amp|vial|หลอด|syringe|pen/.test(t)) return [["กล่อง", 5], ["กล่อง", 10], ["กล่อง", 25], ["กล่อง", 50], ["กล่อง", 100]];
+  if (/ถุง/.test(t)) return [["ลัง", 10], ["ลัง", 12], ["ลัง", 20]];
+  if (/ขวด/.test(t)) return [["แพ็ก", 6], ["โหล", 12], ["ลัง", 24], ["ลัง", 48]];
+  return [["กล่อง", 10], ["กล่อง", 50], ["กล่อง", 100], ["ลัง", 12]];
+}
+/** ตรวจแถวหน่วยบรรจุ — คืนข้อความผิดรายแถว (ตรงกับที่เซิร์ฟเวอร์ตรวจ) */
+function packErrors(rows, base) {
+  return rows.map((r, i) => {
+    const n = String(r.n || "").trim(), qs = String(r.q || "").replace(/,/g, "").trim();
+    if (!n && !qs) return "";
+    if (!n) return "ใส่ชื่อหน่วย เช่น กล่อง แผง ขวด";
+    if (n.length > 15 || /[\d:,;|=×]/.test(n)) return "ชื่อหน่วยห้ามมีตัวเลข และไม่เกิน 15 ตัวอักษร";
+    if (n === base) return "ชื่อหน่วยต้องต่างจากหน่วยนับ (" + base + ")";
+    const q = Number(qs);
+    if (!qs || !(q >= 2) || q > 1000000 || Math.round(q) !== q) return "จำนวนต่อ 1 " + n + " ต้องเป็นจำนวนเต็ม 2 ขึ้นไป";
+    if (rows.slice(0, i).some(x => String(x.n).trim() === n && Number(String(x.q).replace(/,/g, "")) === q)) return "ซ้ำกับแถวด้านบน";
+    return "";
+  });
+}
+
+/* ========================= state ========================= */
+const S = {
+  me: null, drugs: new Map(), list: [], hx: new Map(), dests: [], config: {}, alerts: null,
+  view: "loading", mode: store.get("mode", "OUT"), destOut: store.get("destOut", ""), destIn: store.get("destIn", ""),
+  doc: store.get("doc", ""), drug: null, search: store.get("lastSearch", ""), zf: "", histScope: "me", history: null,
+  alertTab: "neg", alertData: null, card: null, pick: store.get("pick", []), recentDrugs: store.get("recentDrugs", []),
+  settings: store.get("settings", { autoScan: false }), inLiff: false, demo: false, token: "", profile: null, params: {},
+  putaway: [], rx: null, gtin: new Map()
+};
+const outbox = { items: store.get("outbox", []), busy: false, waiters: {} };
+
+/* ========================= API ========================= */
+class ApiError extends Error { constructor(msg, code, network) { super(msg); this.code = code; this.network = !!network; } }
+async function api(action, payload) {
+  if (S.demo) return Demo.call(action, payload || {});
+  let res;
+  try {
+    res = await fetch(CONFIG.API_URL, { method: "POST", body: JSON.stringify(Object.assign({ action, token: S.token }, payload || {})), redirect: "follow" });
+  } catch (e) {
+    throw new ApiError("เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ (" + (e.message || e) + ") — ตรวจสอบสัญญาณอินเทอร์เน็ต", "NETWORK", true);
+  }
+  const txt = await res.text();
+  let j;
+  try { j = JSON.parse(txt); } catch (e) {
+    throw new ApiError("เซิร์ฟเวอร์ตอบกลับไม่ใช่ JSON (HTTP " + res.status + "): " + txt.slice(0, 300), "BAD_RESPONSE", res.status >= 500);
+  }
+  if (!j.ok) throw new ApiError(j.error || "เกิดข้อผิดพลาดไม่ทราบสาเหตุ", j.code);
+  return j.data;
+}
+
+/* ========================= init ========================= */
+async function init() {
+  S.params = readParams();
+  if (!CONFIG.API_URL) {
+    if (!CONFIG.DEMO_DATA_URL) return renderSetupNeeded();
+    S.demo = true;
+    try { await Demo.load(CONFIG.DEMO_DATA_URL); } catch (e) { return renderFatal("โหลดข้อมูลสาธิตไม่สำเร็จ", e); }
+  } else {
+    try {
+      await liff.init({ liffId: CONFIG.LIFF_ID });
+      if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
+      S.inLiff = liff.isInClient();
+      S.token = liff.getAccessToken();
+      S.params = readParams();
+      try { S.profile = await liff.getProfile(); } catch (e) { S.profile = null; }
+    } catch (e) {
+      return renderFatal("เริ่มต้น LINE (LIFF) ไม่สำเร็จ — ตรวจสอบ LIFF_ID และ Endpoint URL", e);
+    }
+  }
+  await boot();
+}
+function readParams() {
+  const q = new URLSearchParams(location.search);
+  const st = q.get("liff.state");
+  if (st) { const inner = new URLSearchParams(st.replace(/^[^?]*\?/, "")); inner.forEach((v, k) => q.set(k, v)); }
+  return { d: q.get("d") || "", view: q.get("view") || "", scan: q.get("scan") === "1" };
+}
+async function boot() {
+  renderLoading("กำลังโหลดข้อมูลยา…");
+  let data;
+  try { data = await api("boot"); }
+  catch (e) {
+    if (e.code === "NOT_REGISTERED") return renderRegister();
+    if (e.code === "PENDING") return renderPending();
+    return renderFatal("โหลดข้อมูลไม่สำเร็จ", e, true);
+  }
+  S.me = data.me; S.dests = data.dests; S.config = data.config || {}; S.alerts = data.alerts;
+  S.putaway = data.putaway || []; paFetchAt = Date.now(); S.rx = rxLoad();
+  setDrugs(data.drugs);
+  if (!can(S.mode)) S.mode = "OUT";
+  if (!can("OUT")) S.mode = "";
+  applyOutboxOptimistic();
+  document.getElementById("tabbar").hidden = false;
+  processOutbox();
+  if (S.params.d) openDrug(resolveCode(S.params.d) || S.params.d, true);
+  else if (S.params.view) go(S.params.view);
+  else go("home");
+  if (S.params.scan) setTimeout(scan, 350);
+}
+function setDrugs(list) {
+  S.list = list; S.drugs = new Map(); S.hx = new Map();
+  S.gtin = new Map();
+  list.forEach(d => { d._k = norm(d.n) + "|" + norm(d.g); S.drugs.set(d.c, d); if (d.hx) S.hx.set(String(d.hx), d.c); (d.gt || []).forEach(g => S.gtin.set(normGtin(g), d.c)); });
+}
+const can = p => !!(S.me && S.me.perms && S.me.perms[p]);
+
+/* ========================= navigation ========================= */
+let navStack = [];
+function go(view, push) {
+  if (push !== false && S.view && S.view !== view && S.view !== "loading") navStack.push(S.view);
+  S.view = view;
+  if (view === "history") loadHistory();
+  if (view === "alerts") loadAlerts();
+  if (view === "home" || view === "putaway") refreshPending();
+  render();
+  window.scrollTo(0, 0);
+  try { history.pushState({ v: view }, ""); } catch (e) { /* sandbox */ }
+}
+function back() {
+  const v = navStack.pop() || "home";
+  S.view = v;
+  if (v === "history") loadHistory();
+  render();
+}
+window.addEventListener("popstate", () => { if (closeSheet()) return; if (S.view !== "home" && S.me) back(); });
+
+function render() {
+  const app = $("#app");
+  const views = { home: vHome, search: vSearch, drug: vDrug, history: vHistory, alerts: vAlerts, card: vCard, me: vMe, pick: vPick, putaway: vPutaway };
+  const fn = views[S.view] || vHome;
+  app.innerHTML = demoBar() + fn();
+  renderTabbar();
+  if (S.view === "search") { const i = $("#q"); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
+}
+function renderTabbar() {
+  const tb = $("#tabbar");
+  if (!S.me) { tb.hidden = true; return; }
+  const t = (v, icon, label, extra) => `<button class="${S.view === v ? "on" : ""}" data-act="go" data-arg="${v}" aria-label="${label}">${icon}<span>${label}</span>${extra || ""}</button>`;
+  const pendingPick = S.pick.filter(p => !p.done).length;
+  const q = outbox.items.length;
+  tb.innerHTML = `<div class="in">
+    ${t("home", I.home, "หน้าแรก", (S.putaway || []).length && canPa() ? `<span class="dot" style="background:var(--low)">${S.putaway.length}</span>` : "")}
+    ${t("search", I.search, "ค้นหา")}
+    <button data-act="scan" aria-label="สแกน QR"><span class="fab">${I.scan}</span><span>สแกน</span></button>
+    ${t("pick", I.list, "รายการหยิบ", pendingPick ? `<span class="dot">${pendingPick}</span>` : "")}
+    ${t("history", I.clock, "ประวัติ", q ? `<span class="dot">${q}</span>` : "")}
+  </div>`;
+}
+function topbar(title, sub, right, noBack) {
+  return `<div class="topbar">
+    ${noBack ? "" : `<button class="icon-btn" data-act="back" aria-label="ย้อนกลับ">${I.back}</button>`}
+    <div class="title"><h2>${title}</h2>${sub ? `<small>${sub}</small>` : ""}</div>${right || ""}</div>`;
+}
+function demoBar() {
+  if (!S.demo) return "";
+  const roles = [["ผู้ดูแลระบบ", "ผู้ดูแล"], ["หัวหน้าคลัง", "หัวหน้าคลัง"], ["เจ้าหน้าที่คลัง", "เจ้าหน้าที่คลัง"], ["ดูยอดอย่างเดียว", "ดูอย่างเดียว"]];
+  return `<div class="demo-bar no-print"><span><b>โหมดสาธิต</b> ยาจริง 615 รายการ · ยอดจำลอง · ลองเป็น</span>
+    <span class="chips">${roles.map(r => `<button class="${S.me && S.me.role === r[0] ? "on" : ""}" data-act="demoRole" data-arg="${r[0]}">${r[1]}</button>`).join("")}
+    <button data-act="demoReset">รีเซ็ต</button></span></div>`;
+}
+
+/* ========================= views ========================= */
+function modeSeg(prefix) {
+  const modes = ["OUT", "IN", "COUNT"].filter(can);
+  if (modes.length < 2) return "";
+  const ico = { OUT: I.out, IN: I.in, COUNT: I.count };
+  return `<div class="seg" role="tablist">${modes.map(m => `<button role="tab" aria-selected="${S.mode === m}" class="m-${m} ${S.mode === m ? "on" : ""}" data-act="${prefix}Mode" data-arg="${m}">${ico[m]}${T[m]}</button>`).join("")}</div>`;
+}
+function destPicker() {
+  if (S.mode === "OUT") {
+    const v = S.destOut;
+    return `<button class="picker ${v ? "" : "unset"}" data-act="pickDest" data-arg="OUT"><span class="grow"><span class="lbl">จ่ายให้หน่วยเบิก</span><span class="val">${v ? esc(v) : "แตะเพื่อเลือกหน่วยเบิก"}</span></span>${I.down}</button>`;
+  }
+  if (S.mode === "IN") {
+    const v = S.destIn;
+    return `<button class="picker ${v ? "" : "unset"}" data-act="pickDest" data-arg="IN"><span class="grow"><span class="lbl">รับจาก</span><span class="val">${v ? esc(v) : "แตะเพื่อเลือกแหล่งที่มา"}</span></span>${I.down}</button>`;
+  }
+  if (S.mode === "COUNT") return `<div class="warn" style="background:var(--count-soft);color:var(--count)">${I.count}<span>นับยาจริงบนชั้น แล้วกรอก “จำนวนที่นับได้” ระบบจะปรับยอดและบันทึกผลต่างให้อัตโนมัติ</span></div>`;
+  return "";
+}
+function vHome() {
+  const me = S.me;
+  const initial = (me.name || "?").replace(/^(ภก\.|ภญ\.|นาย|นาง|นางสาว|น\.ส\.|คุณ)\s*/, "").slice(0, 1);
+  const av = me.picture || (S.profile && S.profile.pictureUrl);
+  const a = S.alerts;
+  const q = outbox.items;
+  const scanLabel = { OUT: ["สแกนเพื่อจ่ายออก", "แตะเพื่อเปิดกล้อง · สแกนฉลากที่ชั้นยา"], IN: ["สแกนเพื่อรับเข้า", "สแกนฉลาก ถ่ายใบส่งของ ระบบช่วยกรอกจำนวน Lot วันหมดอายุ"], COUNT: ["สแกนเพื่อตรวจนับ", "นับของจริงบนชั้น แล้วกรอกจำนวน"], "": ["สแกนเพื่อดูยอด", "ดูยอดคงเหลือและตำแหน่งยา"] }[S.mode || ""];
+  const recent = S.recentTx || [];
+  return `
+  <div class="topbar">
+    <div class="title hello"><small>${greet()} · ${esc(S.config.hospital || "คลังยา โรงพยาบาลหล่มสัก")}</small><h1>${esc(me.name)}</h1><span class="role">${esc(me.role)}</span></div>
+    <button class="avatar" data-act="go" data-arg="me" aria-label="ข้อมูลของฉัน">${av ? `<img src="${esc(av)}" alt="">` : esc(initial)}</button>
+  </div>
+  <div class="stack">
+    ${modeSeg("home")}
+    ${destPicker()}
+    <button class="scan-btn m-${S.mode || "OUT"}" data-act="scan"><span class="ico">${I.scan}</span><span><b>${scanLabel[0]}</b><small>${scanLabel[1]}</small></span></button>
+    ${rxBanner()}
+    ${paCard()}
+    <button class="search-fake" data-act="go" data-arg="search">${I.search}<span>ค้นหาชื่อยา · รหัส · รหัส HOSxP · ตำแหน่ง</span></button>
+    ${q.length ? `<button class="warn ${q.some(i => i.state === "failed") ? "danger" : ""}" data-act="go" data-arg="history" style="width:100%;text-align:left">${I.cloud}<span>${q.some(i => i.state === "failed") ? "มีรายการส่งไม่สำเร็จ " + q.filter(i => i.state === "failed").length + " รายการ — แตะเพื่อดูและลองใหม่" : "รอส่งข้อมูล " + q.length + " รายการ (ส่งอัตโนมัติเมื่อมีสัญญาณ)"}</span></button>` : ""}
+  </div>
+  ${a ? `<div class="sec-title"><span>ต้องดำเนินการ</span><button data-act="refreshAlerts">อัปเดต</button></div>
+  <div class="tiles">
+    <button class="tile t-neg" data-act="openAlerts" data-arg="neg"><b class="num">${a.neg}</b><span>ติดลบ<br>รอลงรับเข้าคลัง</span></button>
+    <button class="tile t-low" data-act="openAlerts" data-arg="low"><b class="num">${a.low}</b><span>ต่ำกว่า MIN<br>ควรสั่งซื้อ</span></button>
+    <button class="tile t-exp" data-act="openAlerts" data-arg="exp"><b class="num">${a.exp}</b><span>ล็อต<br>ใกล้หมดอายุ</span></button>
+  </div>` : ""}
+  ${S.pick.length ? `<div class="sec-title"><span>รายการหยิบ (${S.pick.filter(p => p.done).length}/${S.pick.length})</span><button data-act="go" data-arg="pick">เปิด</button></div>` : ""}
+  <div class="sec-title"><span>รายการล่าสุดของฉัน</span><button data-act="go" data-arg="history">ทั้งหมด</button></div>
+  ${recent.length ? `<div class="list">${recent.slice(0, 5).map(txRow).join("")}</div>` : `<div class="list"><div class="empty">ยังไม่มีรายการ — กดปุ่มสแกนเพื่อเริ่ม</div></div>`}`;
+}
+
+function drugRow(d, opts) {
+  const s = stockOf(d), st = status(s), inPick = S.pick.some(p => p.c === d.c);
+  return `<div class="item">
+    <button class="row" style="flex:1;min-width:0;text-align:left;gap:12px" data-act="open" data-arg="${d.c}">
+      ${ftile(d)}
+      <span class="main"><span class="name">${esc(d.n)}</span>
+        <span class="sub">${lchip(d)}<span class="mono">${d.c}</span>${d.hx ? `<span>HOSxP ${esc(d.hx)}</span>` : ""}${d.h ? '<span class="chip had">HAD</span>' : ""}${d.p ? `<span class="chip">ตัดที่ ${esc(d.p)}</span>` : ""}</span></span>
+      <span class="right"><b class="${s.b < 0 ? "" : ""}" style="${s.b < 0 ? "color:var(--neg)" : ""}">${fmtN(s.b)}</b><small>${esc(s.u)}</small><br><span class="chip ${st[0]}" style="margin-top:3px">${st[1]}</span></span>
+    </button>
+    ${opts && opts.noAdd ? "" : `<button class="add-btn ${inPick ? "on" : ""}" data-act="togglePick" data-arg="${d.c}" aria-label="${inPick ? "เอาออกจากรายการหยิบ" : "เพิ่มในรายการหยิบ"}">${inPick ? I.check : I.plus}</button>`}
+  </div>`;
+}
+function searchDrugs(q, zf) {
+  const k = norm(q);
+  let res = S.list;
+  if (zf) res = res.filter(d => d.z === zf);
+  if (!k) return zf ? res.slice().sort((a, b) => (a.l || "").localeCompare(b.l || "")) : [];
+  const exact = S.drugs.get(q.trim().toUpperCase()) || S.drugs.get(S.hx.get(q.trim()));
+  const scored = [];
+  res.forEach(d => {
+    let s = 0;
+    const n = norm(d.n), g = norm(d.g);
+    if (d === exact) s = 100;
+    else if (n.startsWith(k) || g.startsWith(k)) s = 60;
+    else if (d._k.includes(k)) s = 40;
+    else if (norm(d.l).startsWith(k) || norm(d.c).startsWith(k)) s = 30;
+    else if (d.hx && String(d.hx).startsWith(q.trim())) s = 25;
+    if (s) scored.push([s - d.n.length / 200, d]);
+  });
+  return scored.sort((a, b) => b[0] - a[0]).map(x => x[1]);
+}
+function vSearch() {
+  const res = searchDrugs(S.search, S.zf);
+  const recent = S.recentDrugs.map(c => S.drugs.get(c)).filter(Boolean);
+  const zbtn = Object.keys(ZONES).map(z => `<button class="${S.zf === z ? "on" : ""}" style="--z:${ZONES[z][5]}" data-act="zf" data-arg="${z}">${z} · ${ZONES[z][1]}</button>`).join("");
+  let body;
+  if (!S.search && !S.zf) body = recent.length ? `<div class="sec-title"><span>เปิดดูล่าสุด</span></div><div class="list">${recent.map(d => drugRow(d)).join("")}</div>`
+    : `<div class="list"><div class="empty">พิมพ์ชื่อยา (ไทย/อังกฤษ) รหัส D0001 รหัส HOSxP หรือตำแหน่ง เช่น A03<br>แตะ ＋ เพื่อรวมเป็น “รายการหยิบ” เรียงตามทางเดิน</div></div>`;
+  else body = res.length ? `<div class="sec-title"><span>พบ ${res.length} รายการ${res.length > 80 ? " (แสดง 80)" : ""}</span></div><div class="list">${res.slice(0, 80).map(d => drugRow(d)).join("")}</div>`
+    : `<div class="list"><div class="empty">ไม่พบ “${esc(S.search)}” — ลองพิมพ์สั้นลง เช่น 3–4 ตัวอักษรแรกของชื่อยา</div></div>`;
+  return topbar("ค้นหายา", "ดูตำแหน่งและยอดคงเหลือ") + `
+    <div class="search-input">${I.search}<input id="q" type="search" placeholder="เช่น para, ยาน้ำ, D0175, A03" value="${esc(S.search)}" data-input="search" autocomplete="off" enterkeyhint="search">${S.search ? `<button class="icon-btn" style="box-shadow:none;width:36px;height:36px" data-act="clearSearch" aria-label="ล้าง">${I.x}</button>` : ""}</div>
+    <div class="zfilter">${zbtn}</div>${body}`;
+}
+
+function shelfSvg(d) {
+  const p = parseLoc(d.l);
+  const z = ZONES[d.z];
+  if (!p || !z) return "";
+  const levels = z[3], per = z[4], W = 128, H = 14 * levels + 6, cw = (W - 8) / per;
+  let s = `<svg class="shelf" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="ชั้นที่ ${p.level} ช่องที่ ${p.slot}">`;
+  for (let i = 0; i < levels; i++) {
+    const y = 3 + i * 14, on = i + 1 === p.level;
+    s += `<rect x="2" y="${y}" width="${W - 4}" height="12" rx="3" style="fill:${on ? z[5] + "33" : "var(--surface-2)"};stroke:${on ? z[5] : "var(--line)"};stroke-width:1"/>`;
+    if (on) s += `<rect x="${4 + (p.slot - 1) * cw}" y="${y + 2}" width="${cw - 2}" height="8" rx="2" style="fill:${z[5]};stroke:none"/>`;
+  }
+  return s + "</svg>";
+}
+function vDrug() {
+  const D = S.drug;
+  const d = S.drugs.get(D.code);
+  if (!d) return topbar("ไม่พบรหัสยา") + `<div class="card"><p>ไม่พบรหัส <b class="mono">${esc(D.code)}</b> ในทะเบียนยา</p><button class="btn" data-act="scan">${I.scan}สแกนใหม่</button></div>`;
+  const s = stockOf(d);
+  const st = status(s);
+  const z = ZONES[d.z] || ["ไม่ระบุโซน", "", "ตู้", 5, 8, "#64748B"];
+  const lots = D.lots ? allocateLots(D.lots.filter(l => !l.unknown && (l.lot || l.exp)).map(l => ({ lot: l.lot, exp: l.exp, qty: l.left || l.qty })), s.b).filter(l => !l.unknown) : [];
+  const fefo = lots[0];
+  const mmMax = Math.max(s.mx || 0, s.b, 1);
+  const ml = s.av > 0 ? Math.round(s.b / s.av * 10) / 10 : null;
+  const mode = S.mode;
+  const head = `${topbar(`<span class="mono" style="font-size:15px;color:var(--ink-3)">${d.c}</span>`, d.hx ? "HOSxP " + esc(d.hx) : "",
+    `<button class="icon-btn" data-act="openCard" aria-label="บัตรคลัง">${I.card}</button>${can("updateDrug") ? `<button class="icon-btn" data-act="editDrug" aria-label="แก้ไขข้อมูลยา">${I.edit}</button>` : ""}`)}
+    <div class="stack">
+    <div class="drug-head">${ftile(d, { lg: true, noPa: true })}<div class="grow"><h1 class="drug-name">${esc(d.n)}</h1>${d.g ? `<div class="muted" style="font-size:14px">${esc(d.g)}</div>` : ""}
+      <div class="badges"><span class="chip form" style="--z:${zoneColor(d.z)}">${formSvg(d.f || "tab")}${esc(FORM_LABEL[d.f] || "ยาเม็ด/แคปซูล")}</span>${d.h ? `<span class="chip had">${I.alert}HAD</span>` : ""}${d.z === "R" ? `<span class="chip cold">${I.cold}เก็บ 2–8 °C</span>` : ""}${d.z === "N" ? `<span class="chip lock">${I.lock}ยาควบคุม</span>` : ""}
+      ${d.e ? `<span class="chip">${esc(d.e)}</span>` : ""}${d.a ? `<span class="chip">ABC ${esc(d.a)}${d.v ? " · VEN " + esc(d.v) : ""}</span>` : ""}</div></div></div>
+    ${d.p && s !== d ? `<div class="warn">${I.alert}<span>รายการนี้ตัดสต๊อกรวมที่ <b>${esc(s.c)} ${esc(s.n)}</b></span></div>` : ""}
+    ${d.nt ? `<div class="warn" style="font-size:13px">${I.alert}<span>${esc(d.nt)}</span></div>` : ""}
+    <div class="info2">
+      <div class="card bal-card" style="--c:var(--${st[0] === "ok" ? "in" : st[0] === "over" ? "exp" : st[0]})">
+        <div class="lbl">คงเหลือในระบบ</div>
+        <div class="bal-num ${s.b < 0 ? "neg" : ""}">${fmtN(s.b)}</div>
+        <div class="bal-unit">${esc(s.u)} <span class="chip ${st[0]}">${st[1]}</span></div>
+        ${(s.ps || []).length && s.b >= Math.min(...s.ps.map(p => p.q)) ? `<div class="faint num" style="font-size:12.5px;margin-top:2px">≈ ${esc(packBreak(s.b, s))}</div>` : ""}
+        ${s.mx > 0 ? `<div class="minmax"><div class="fill" style="width:${Math.max(0, Math.min(100, s.b / mmMax * 100))}%"></div><div class="tick" style="left:${s.mn / mmMax * 100}%"></div></div>
+        <div class="mm-legend"><span>MIN ${fmtN(s.mn)}</span><span>MAX ${fmtN(s.mx)}</span></div>` : ""}
+        <div class="faint" style="font-size:12px;margin-top:4px">${ml != null ? "พอใช้ ~" + ml + " เดือน" : ""}${!s.os ? " · ยังไม่ตั้งยอดยกมา" : ""}${D.loading ? " · กำลังอัปเดต…" : ""}</div>
+      </div>
+      <div class="card loc-card" style="--z:${z[5]}">
+        <div class="lbl">ตำแหน่ง · โซน ${esc(d.z)} ${esc(z[1])}</div>
+        <div class="loc-code">${esc(d.l || "—")}</div>
+        <div class="loc-line">${locLine(d)}</div>
+        ${shelfSvg(d)}
+        <div class="faint" style="font-size:11.5px">ชั้น 1 = บนสุด · ช่อง 1 = ซ้ายสุด</div>
+        ${d.l2 ? `<div class="loc-line" style="margin-top:4px">สำรอง: <b class="mono">${esc(d.l2)}</b></div>` : ""}
+      </div>
+    </div>
+    ${fefo ? `<div class="fefo">${I.hour}<span>หยิบล็อตนี้ก่อน: <b>${esc(fefo.lot || "ไม่ระบุ Lot")}</b> · หมดอายุ <b>${fmtExp(fefo.exp)}</b>${monthsLeft(fefo.exp) != null ? ` (อีก ${monthsLeft(fefo.exp)} เดือน)` : ""}${lots.length > 1 ? ` · มีอีก ${lots.length - 1} ล็อต` : ""}</span></div>` : ""}
+    ${paBanner(d, s)}`;
+  if (!mode) return head + `</div>${recentBlock(D)}`;
+  return head + `${modeSeg("drug")}${actionBlock(d, s)}</div>${recentBlock(D)}`;
+}
+function actionBlock(d, s) {
+  const D = S.drug, mode = S.mode;
+  const U = unitsOf(s), hasPacks = U.length > 1;
+  const cur = U.find(u => u.k === D.ui) || U[U.length - 1];
+  const entered = qtyEntered(D);
+  const base = qtyTotal(D, s);
+  const curVal = D.counts[cur.k] || "";
+  const nParts = U.filter(u => Number(D.counts[u.k]) > 0).length;
+  const showBreak = entered && (nParts > 1 || (nParts === 1 && Number(D.counts[cur.k]) > 0 && cur.q > 1) || (nParts === 1 && !(Number(D.counts[cur.k]) > 0)));
+  let after = null, diffTxt = "";
+  if (entered) {
+    if (mode === "OUT") after = round2(s.b - base);
+    if (mode === "IN") after = round2(s.b + base);
+    if (mode === "COUNT") { const df = round2(base - s.b); diffTxt = df === 0 ? "ตรงกับระบบ" : (df > 0 ? "+" : "") + fmtN(df) + " " + s.u; }
+  }
+  const qlabel = { OUT: "จำนวนจ่ายออก", IN: "จำนวนรับเข้า", COUNT: "จำนวนที่นับได้จริง" }[mode];
+  let extra = "";
+  if (mode === "IN") {
+    const ep = parseExp(D.exp);
+    const ml = ep ? monthsLeft(ep) : null;
+    const src = D.src || {}, tag = k => src[k] ? ` <span class="src ${src[k] === "bc" ? "bc" : ""}">${src[k] === "bc" ? "บาร์โค้ด" : "จากภาพ"}</span>` : "";
+    extra = `${rxBlock(d, s)}<div class="fields2">
+      <div class="field"><label for="f-lot">Lot / Batch${tag("lot")}</label><input id="f-lot" class="${src.lot ? "from-img" : ""}" data-input="lot" value="${esc(D.lot)}" placeholder="เช่น A2405" autocapitalize="characters" autocomplete="off"></div>
+      <div class="field"><label for="f-exp">หมดอายุ (ดด/ปป)${tag("exp")}</label><input id="f-exp" class="${src.exp ? "from-img" : ""}" data-input="exp" value="${esc(D.exp)}" placeholder="03/70" inputmode="numeric" autocomplete="off">
+        <span class="hint ${D.exp ? (ep ? (ml < 6 ? "bad" : "ok") : "bad") : ""}" id="exp-hint">${D.exp ? (ep ? fmtExp(ep) + " · อีก " + ml + " เดือน" + (ml < 6 ? " (สั้น!)" : "") : "รูปแบบไม่ถูกต้อง") : "พ.ศ. หรือ ค.ศ. ก็ได้"}</span></div></div>
+      <div class="field"><label for="f-doc">เลขที่ใบส่งของ / ใบเบิก (จำไว้ใช้ต่อทั้งรอบ)${tag("doc")}</label><input id="f-doc" class="${src.doc ? "from-img" : ""}" data-input="doc" value="${esc(S.doc)}" placeholder="ไม่บังคับ" autocomplete="off"></div>`;
+  }
+  const warnOver = mode === "OUT" && after != null && after < 0;
+  const big = entered && isAbnormal(s, base);
+  const missingDest = (mode === "OUT" && !S.destOut) || (mode === "IN" && !S.destIn);
+  const canSave = entered && (mode === "COUNT" || base > 0) && !missingDest && !(mode === "IN" && D.exp && !parseExp(D.exp));
+  const saveLbl = { OUT: "บันทึกจ่าย", IN: "บันทึกรับเข้า", COUNT: "บันทึกผลตรวจนับ" }[mode] + (entered ? " " + fmtN(base) + " " + s.u : "");
+  const canPack = can("editPacks");
+  const unitRow = hasPacks
+    ? `<div class="units m-${mode}" role="radiogroup" aria-label="หน่วยที่กำลังกรอก">${U.map(u => `<button class="unit ${u.k === cur.k ? "on" : ""}" role="radio" aria-checked="${u.k === cur.k}" data-act="unit" data-arg="${esc(u.k)}"><b>${esc(u.n)}</b><small>${u.q > 1 ? "×" + fmtN(u.q) : "หน่วยนับ"}</small>${Number(D.counts[u.k]) > 0 ? `<span class="cnt">${fmtN(D.counts[u.k])}</span>` : ""}</button>`).join("")}${canPack ? `<button class="unit add" data-act="packEditor" aria-label="แก้หน่วยบรรจุ">${I.edit}</button>` : ""}</div>`
+    : canPack ? `<button class="link" data-act="packEditor" style="justify-self:start">${I.plus}ตั้งหน่วยบรรจุ (กล่อง/แผง) เพื่อกดนับเป็นหน่วยใหญ่</button>` : "";
+  return `${destPicker()}${extra}${unitRow}
+    <div class="qty-box m-${mode}">
+      <div><div class="faint" style="font-size:12.5px">${qlabel}${hasPacks ? " · กำลังกรอก " + esc(cur.n) : ""}${mode === "IN" && D.src && D.src.qty ? ' <span class="src">จากภาพ</span>' : ""}</div><div class="q ${curVal === "" ? "ph" : ""}">${curVal === "" ? "0" : fmtN(curVal)}</div></div>
+      <div class="u">${esc(cur.n)}${cur.q > 1 ? `<div class="faint" style="font-size:12px;font-weight:500">1 ${esc(cur.n)} = ${fmtN(cur.q)} ${esc(s.u)}</div>` : ""}</div>
+      ${showBreak ? `<div class="breakdown">${esc(qtyBreakdown(D, s)) || "0"} = <b>${fmtN(base)}</b> ${esc(s.u)}</div>` : ""}
+      <div class="conv"><span></span>
+        ${after != null ? `<span>คงเหลือหลังบันทึก <b class="${after < 0 ? "bad" : ""}">${fmtN(after)}</b></span>` : ""}${diffTxt ? `<span>ผลต่าง <b>${diffTxt}</b></span>` : ""}</div>
+    </div>
+    ${warnOver ? `<div class="warn">${I.alert}<span>ยอดในระบบไม่พอจ่าย (มี ${fmtN(s.b)}) — ยาที่หยิบอาจยังไม่ได้ลงรับเข้าคลัง บันทึกได้ ระบบจะติดป้าย “จ่ายเกินยอด” และแจ้งหัวหน้าคลังให้ลงรับ</span></div>` : ""}
+    ${big ? `<div class="warn danger">${I.alert}<span>จำนวนมากผิดปกติเมื่อเทียบกับการใช้ (${fmtN(s.av)}/${esc(s.u)} ต่อเดือน) — ตรวจเลขศูนย์อีกครั้ง</span></div>` : ""}
+    <div class="keypad" aria-label="แป้นตัวเลข">
+      ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button data-act="key" data-arg="${n}">${n}</button>`).join("")}
+      <button class="fn" data-act="key" data-arg="C">${nParts > 1 && !curVal ? "ล้างทั้งหมด" : "ล้าง"}</button><button data-act="key" data-arg="0">0</button><button class="fn" data-act="key" data-arg="B" aria-label="ลบ">${I.del}</button>
+    </div>
+    <button class="btn m-${mode}" data-act="save" ${canSave ? "" : "disabled"}>${I.check}${esc(saveLbl)}</button>
+    ${missingDest ? `<div class="faint" style="text-align:center;font-size:13px">เลือก${mode === "OUT" ? "หน่วยเบิก" : "แหล่งที่มา"}ก่อนบันทึก</div>` : ""}`;
+}
+function isAbnormal(s, q) {
+  if (!q) return false;
+  const lim = Math.max((s.mx || 0) * 1.5, (s.av || 0) * 4);
+  return lim > 0 && q > lim;
+}
+function recentBlock(D) {
+  if (!D.recent) return D.loading ? "" : "";
+  return `<div class="sec-title"><span>เคลื่อนไหวล่าสุด</span><button data-act="openCard">บัตรคลัง</button></div>
+    ${D.recent.length ? `<div class="list">${D.recent.map(t => txRow(t, true)).join("")}</div>` : `<div class="list"><div class="empty">ยังไม่มีการเคลื่อนไหว</div></div>`}`;
+}
+function txRow(t, compact) {
+  const ico = { OUT: I.out, IN: I.in, COUNT: I.count }[t.type] || I.list;
+  const sign = t.type === "OUT" ? "−" : t.type === "IN" ? "+" : (t.change > 0 ? "+" : t.change < 0 ? "−" : "±");
+  const amount = t.type === "COUNT" ? Math.abs(t.change) : t.qty;
+  const tag = t._q ? (t._q === "failed" ? '<span class="chip fail">ส่งไม่สำเร็จ</span>' : '<span class="chip queue">รอส่ง</span>')
+    : t.status === "ยกเลิก" ? '<span class="chip">ยกเลิก</span>' : t.status === "แก้ไขแล้ว" ? '<span class="chip">แก้ไขแล้ว</span>' : "";
+  return `<button class="item ${t.status === "ยกเลิก" ? "void" : ""}" data-act="${t._q ? "openQueued" : "editTx"}" data-arg="${esc(t.id)}">
+    <span class="tx-ico tx-${t.type}">${ico}</span>
+    <span class="main"><span class="name">${compact ? esc(T[t.type] + (t.dest ? " · " + t.dest : "")) : esc(t.name)}</span>
+      <span class="sub">${compact ? esc(t.by) : esc(T[t.type] + (t.dest ? " → " + t.dest : ""))} · ${dayLabel(t.time)} ${fmtTime(t.time)}${t.lot ? " · Lot " + esc(t.lot) : ""}${t.note && /×/.test(t.note) ? " · " + esc(t.note.split(" · ")[0].split(" = ")[0]) : ""} ${t.over ? '<span class="chip low">จ่ายเกินยอด</span>' : ""}${t.pa === PA_WAIT ? `<span class="chip wait">${I.hour}รอขึ้นชั้น</span>` : ""}${(t.ev || []).length ? `<span class="chip ev">${I.camera}${t.ev.length}</span>` : ""}${tag}</span></span>
+    <span class="right"><b style="color:var(--${t.type === "OUT" ? "out" : t.type === "IN" ? "in" : "count"})">${sign}${fmtN(amount)}</b><small>${esc(t.unit)}${t.bal != null && compact ? " · เหลือ " + fmtN(t.bal) : ""}</small></span>
+  </button>`;
+}
+
+function vHistory() {
+  const q = outbox.items.map(i => Object.assign({}, i.txn, { _q: i.state, name: (S.drugs.get(i.txn.code) || {}).n || i.txn.code, unit: (stockOf(S.drugs.get(i.txn.code)) || {}).u || "", by: S.me.name }));
+  const rows = S.history ? S.history.rows : [];
+  const all = q.concat(rows);
+  let html = "", last = "";
+  all.forEach(t => { const k = dayLabel(t.time); if (k !== last) { html += (last ? "</div>" : "") + `<div class="day-head">${k}</div><div class="list">`; last = k; } html += txRow(t); });
+  if (last) html += "</div>";
+  return topbar("ประวัติการบันทึก", "แตะรายการเพื่อแก้ไขหรือยกเลิก") + `
+    ${can("viewAll") ? `<div class="seg" style="margin-bottom:6px"><button class="${S.histScope === "me" ? "on" : ""}" data-act="histScope" data-arg="me">ของฉัน</button><button class="${S.histScope === "all" ? "on" : ""}" data-act="histScope" data-arg="all">ทุกคน</button></div>` : ""}
+    ${!S.history ? `<div class="empty"><div class="spinner"></div>กำลังโหลด…</div>` : all.length ? html : `<div class="list"><div class="empty">ยังไม่มีรายการ</div></div>`}
+    ${S.history && !can("editAny") ? `<p class="faint" style="font-size:13px;text-align:center">แก้ไข/ยกเลิกรายการของตนเองได้ภายใน ${S.history.editDays || 3} วัน — เกินกว่านั้นแจ้งหัวหน้าคลัง</p>` : ""}`;
+}
+async function loadHistory() {
+  S.history = null;
+  try { S.history = await api("history", { scope: S.histScope, limit: 80 }); if (S.histScope === "me") S.recentTx = S.history.rows.slice(0, 5); }
+  catch (e) { S.history = { rows: [] }; toast(e.message, true); }
+  if (S.view === "history") render();
+}
+
+function vAlerts() {
+  const a = S.alertData;
+  const tabs = [["neg", "ติดลบ"], ["low", "ต่ำกว่า MIN"], ["exp", "ใกล้หมดอายุ"]];
+  let body = `<div class="empty"><div class="spinner"></div>กำลังโหลด…</div>`;
+  if (a) {
+    if (S.alertTab === "exp") body = a.exp.length ? `<div class="list">${a.exp.map(x => `<button class="item" data-act="open" data-arg="${x.drug.c}">${ftile(S.drugs.get(x.drug.c) || x.drug)}<span class="main"><span class="name">${esc(x.drug.n)}</span><span class="sub">${lchip(x.drug)}Lot ${esc(x.lot || "-")}</span></span><span class="right"><b style="color:var(--exp)">${fmtExp(x.exp)}</b><small>เหลือ ${fmtN(x.left)} ${esc(x.drug.u)}</small></span></button>`).join("")}</div>` : `<div class="list"><div class="empty">ไม่มีล็อตที่ใกล้หมดอายุภายใน ${S.config.expiryWarnDays || 180} วัน</div></div>`;
+    else {
+      const L = a[S.alertTab];
+      body = L.length ? `<div class="list">${L.map(d => { Object.assign(S.drugs.get(d.c) || {}, { b: d.b }); return drugRow(S.drugs.get(d.c) || d, { noAdd: S.alertTab === "neg" }); }).join("")}</div>` : `<div class="list"><div class="empty">ไม่มีรายการ</div></div>`;
+    }
+  }
+  const hint = { neg: "ยาที่ถูกจ่ายออกไปก่อนลงรับเข้าคลัง — หัวหน้าคลังสแกนรับเข้าเพื่อให้ยอดกลับมาถูกต้อง", low: "เรียงจากใกล้หมดที่สุด (เดือนคงคลังน้อยสุด) — ใช้ประกอบการสั่งซื้อ", exp: "ล็อตที่ยังมีของเหลือ (คำนวณแบบ FEFO) และหมดอายุภายในเกณฑ์ที่ตั้งไว้" }[S.alertTab];
+  return topbar("แจ้งเตือนคลังยา", "อัปเดตจากยอดล่าสุด", `<button class="icon-btn" data-act="refreshAlerts" aria-label="อัปเดต">${I.refresh}</button>`) + `
+    <div class="seg">${tabs.map(t => `<button class="${S.alertTab === t[0] ? "on" : ""}" data-act="alertTab" data-arg="${t[0]}">${t[1]}${a ? ` <span class="badge">${a[t[0]].length}</span>` : ""}</button>`).join("")}</div>
+    <p class="faint" style="font-size:13px;margin:10px 4px">${hint}</p>${body}`;
+}
+async function loadAlerts() {
+  S.alertData = null;
+  try {
+    S.alertData = await api("alerts");
+    S.alerts = { neg: S.alertData.neg.length, low: S.alertData.low.length, exp: S.alertData.exp.length };
+    S.alertData.neg.concat(S.alertData.low).forEach(d => { const x = S.drugs.get(d.c); if (x) x.b = d.b; });
+  } catch (e) { toast(e.message, true); S.alertData = { neg: [], low: [], exp: [] }; }
+  if (S.view === "alerts") render();
+}
+
+function vCard() {
+  const c = S.card;
+  if (!c) return topbar("บัตรคลัง") + `<div class="empty"><div class="spinner"></div>กำลังโหลด…</div>`;
+  const d = c.drug;
+  const rows = c.rows.slice().reverse();
+  return topbar("บัตรคลังยา", `${esc(d.c)} · ${esc(d.u)}`, `<button class="icon-btn" data-act="print" aria-label="พิมพ์">${I.print}</button>`) + `
+    <div class="card stack" style="gap:6px"><h3 style="font-size:17px">${esc(d.n)}</h3>
+      <div class="muted" style="font-size:13.5px">ตำแหน่ง <b class="mono">${esc(d.l)}</b> · MIN ${fmtN(d.mn)} · MAX ${fmtN(d.mx)} · คงเหลือ <b>${fmtN(d.b)}</b> ${esc(d.u)}</div>
+      ${c.complete ? `<div class="faint" style="font-size:12.5px">ยอดยกมา ${c.openSet ? fmtN(c.openValue) : "ยังไม่ตั้ง (0)"}</div>` : `<div class="faint" style="font-size:12.5px">แสดง ${rows.length} รายการล่าสุด</div>`}</div>
+    <div class="card overflow" style="margin-top:10px;padding:6px 8px">
+    <table class="card-t"><thead><tr><th>วัน-เวลา</th><th>รายการ</th><th class="n">รับ</th><th class="n">จ่าย</th><th class="n">คงเหลือ</th></tr></thead><tbody>
+    ${rows.map(t => `<tr class="${t.status === "ยกเลิก" ? "void" : ""}"><td>${fmtDate(t.time)}<br><span class="faint">${fmtTime(t.time)}</span></td>
+      <td>${esc(T[t.type])}${t.dest ? " · " + esc(t.dest) : ""}${(t.ev || []).length ? ` <button class="chip ev no-print" data-act="evView" data-arg="${esc(t.ev[0])}">${I.camera}${t.ev.length}</button>` : ""}${t.lot ? `<br><span class="faint">Lot ${esc(t.lot)} · ${fmtExp(t.exp)}</span>` : ""}<br><span class="faint">${esc(t.by)}${t.status !== "ปกติ" ? " · " + esc(t.status) : ""}${t.note ? " · " + esc(t.note) : ""}</span></td>
+      <td class="n" style="color:var(--in)">${t.change > 0 ? fmtN(t.change) : ""}</td><td class="n" style="color:var(--out)">${t.change < 0 ? fmtN(-t.change) : ""}</td><td class="n"><b>${fmtN(t.bal)}</b></td></tr>`).join("") || `<tr><td colspan="5" class="empty">ยังไม่มีการเคลื่อนไหว</td></tr>`}
+    </tbody></table></div>`;
+}
+
+function vPick() {
+  const items = S.pick.map(p => ({ p, d: S.drugs.get(p.c) })).filter(x => x.d).sort((a, b) => (a.d.l || "~").localeCompare(b.d.l || "~"));
+  let html = "", lastZ = "";
+  items.forEach(({ p, d }) => {
+    if (d.z !== lastZ) { html += (lastZ ? "</div>" : "") + `<div class="day-head" style="color:${(ZONES[d.z] || [])[5]}">โซน ${d.z} · ${(ZONES[d.z] || [""])[0]}</div><div class="list">`; lastZ = d.z; }
+    const s = stockOf(d);
+    html += `<div class="item" style="${p.done ? "opacity:.55" : ""}">
+      <button class="row" style="flex:1;min-width:0;text-align:left;gap:12px" data-act="open" data-arg="${d.c}">${ftile(d)}
+      <span class="main"><span class="name">${p.done ? "✓ " : ""}${esc(d.n)}</span><span class="sub">${lchip(d)}${locLine(d)}</span></span>
+      <span class="right"><b>${fmtN(s.b)}</b><small>${esc(s.u)}</small></span></button>
+      <button class="add-btn" data-act="togglePick" data-arg="${d.c}" aria-label="เอาออก">${I.x}</button></div>`;
+  });
+  if (lastZ) html += "</div>";
+  return topbar("รายการหยิบยา", "เรียงตามทางเดิน โซน → ตู้ → ชั้น → ช่อง", S.pick.length ? `<button class="icon-btn" data-act="clearPick" aria-label="ล้างรายการ">${I.x}</button>` : "") + `
+    ${S.mode === "OUT" ? destPicker() : ""}
+    ${items.length ? html : `<div class="list"><div class="empty">ยังไม่มีรายการ — ไปที่ “ค้นหา” แล้วแตะ ＋ ทีละรายการตามใบเบิก<br>ระบบจะเรียงให้เดินหยิบครั้งเดียวจบ ไม่ต้องย้อนกลับ</div></div>`}
+    ${items.length ? `<p class="faint" style="font-size:13px;text-align:center;margin-top:12px">แตะยาเพื่อดูตำแหน่ง แล้วสแกนฉลากที่ชั้น — รายการจะติ๊ก ✓ เมื่อบันทึกจ่ายแล้ว</p>
+      <button class="btn" data-act="go" data-arg="search">${I.plus}เพิ่มรายการ</button>` : `<button class="btn" data-act="go" data-arg="search">${I.search}ไปค้นหายา</button>`}`;
+}
+
+function vMe() {
+  const me = S.me, p = me.perms || {};
+  const rows = [["จ่ายออก (ตัดยาออกจากคลัง)", p.OUT], ["รับเข้า (ลงรับยาเข้าคลัง)", p.IN], ["ตรวจนับ / ปรับยอด", p.COUNT], ["แก้ไข/ยกเลิกรายการของทุกคน", p.editAny],
+    ["แก้ไข/ยกเลิกรายการของตนเอง", p.editOwn], ["แก้ตำแหน่ง · ขนาดบรรจุ · MIN/MAX", p.updateDrug], ["ดูแจ้งเตือน (ติดลบ/ต่ำกว่า MIN/หมดอายุ)", p.alerts],
+    ["ถ่ายรูปหลักฐานรับเข้า + อ่านข้อมูลจากภาพ", p.IN], ["ยืนยันจัดขึ้นชั้น (นาฬิกาทราย)", p.putaway]];
+  return topbar("ข้อมูลของฉัน") + `
+    <div class="card stack" style="gap:4px"><h3>${esc(me.name)}</h3><span class="role" style="justify-self:start">${esc(me.role)}</span>
+      <div class="faint" style="font-size:13px">ชื่อและวันเวลาจะถูกบันทึกอัตโนมัติทุกครั้งที่สแกน</div></div>
+    <div class="sec-title"><span>สิทธิ์การใช้งาน</span></div>
+    <div class="card" style="padding:4px 16px">${rows.map(r => `<div class="perm"><span>${r[0]}</span><span class="${r[1] ? "y" : "n"}">${r[1] ? "ได้" : "—"}</span></div>`).join("")}</div>
+    <div class="sec-title"><span>ตั้งค่าเครื่องนี้</span></div>
+    <div class="card" style="padding:4px 16px">
+      <button class="perm" style="width:100%;align-items:center" data-act="toggleSetting" data-arg="autoScan"><span style="text-align:left">เปิดกล้องอัตโนมัติหลังบันทึก<br><small class="faint">สำหรับสแกนต่อเนื่องหลายรายการ</small></span><span class="switch ${S.settings.autoScan ? "on" : ""}"></span></button>
+    </div>
+    ${can("alerts") ? `<button class="btn ghost" style="margin-top:12px" data-act="openAlerts" data-arg="neg">${I.alert}ดูแจ้งเตือนคลังยา</button>` : ""}
+    <button class="btn soft" style="margin-top:10px" data-act="reload">${I.refresh}โหลดข้อมูลใหม่</button>
+    <p class="faint" style="font-size:12px;text-align:center">เวอร์ชัน ${APP_VERSION}${S.demo ? " · โหมดสาธิต" : ""} · ${S.list.length} รายการยา</p>`;
+}
+
+/* ---------- full-screen states ---------- */
+function renderLoading(msg) { $("#app").innerHTML = demoBar() + `<div class="center-screen"><div><div class="spinner"></div><div class="muted">${esc(msg)}</div></div></div>`; }
+function renderFatal(title, e, retry) {
+  $("#app").innerHTML = `<div class="center-screen"><div style="max-width:420px"><div class="big-ico" style="background:var(--neg-soft);color:var(--neg)">${I.alert}</div>
+    <h2>${esc(title)}</h2><p class="muted">ข้อความจากระบบ:</p><div class="err-box">${esc((e && e.message) || e)}</div>
+    ${retry !== false ? `<button class="btn" style="margin-top:16px" data-act="reload">${I.refresh}ลองใหม่</button>` : ""}</div></div>`;
+}
+function renderSetupNeeded() {
+  $("#app").innerHTML = `<div class="center-screen"><div style="max-width:440px"><div class="big-ico">${I.keyboard}</div><h2>ยังไม่ได้ตั้งค่าแอป</h2>
+    <p class="muted">เปิดไฟล์ index.html แล้วใส่ค่า <b class="mono">LIFF_ID</b> และ <b class="mono">API_URL</b> ที่ส่วน CONFIG ด้านบนของไฟล์ ตามคู่มือติดตั้ง</p></div></div>`;
+}
+function renderRegister(err) {
+  const pf = S.profile || {};
+  $("#app").innerHTML = `<div class="center-screen"><div style="width:100%;max-width:420px" class="stack">
+    <div class="big-ico">${pf.pictureUrl ? `<img src="${esc(pf.pictureUrl)}" alt="" style="width:100%;height:100%;border-radius:24px;object-fit:cover">` : I.user}</div>
+    <h2>ลงทะเบียนใช้งานครั้งแรก</h2><p class="muted" style="margin:0">บัญชี LINE: <b>${esc(pf.displayName || "-")}</b><br>ทำครั้งเดียว ครั้งต่อไประบบจำชื่อคุณอัตโนมัติ</p>
+    <div class="field" style="text-align:left"><label for="r-name">ชื่อ-สกุล (ใช้บันทึกในรายการ)</label><input id="r-name" autocomplete="name" placeholder="เช่น นายสมชาย ใจดี"></div>
+    <div class="field" style="text-align:left"><label for="r-inv">รหัสเชิญ 6 หลัก (จากหัวหน้างาน)</label><input id="r-inv" inputmode="numeric" maxlength="6" placeholder="ถ้ามี — เข้าใช้ได้ทันที" class="mono"></div>
+    ${err ? `<div class="err-box">${esc(err)}</div>` : ""}
+    <button class="btn" data-act="register">${I.check}ลงทะเบียน</button>
+    <p class="faint" style="font-size:13px;margin:0">ไม่มีรหัสเชิญ: ระบบจะส่งคำขอให้ผู้ดูแลระบบอนุมัติและกำหนดบทบาท</p></div></div>`;
+}
+function renderPending() {
+  $("#app").innerHTML = `<div class="center-screen"><div style="max-width:400px"><div class="big-ico" style="background:var(--low-soft);color:var(--low)">${I.clock}</div>
+    <h2>รอผู้ดูแลระบบอนุมัติ</h2><p class="muted">ส่งคำขอใช้งานแล้ว เมื่อได้รับอนุมัติ กดปุ่มด้านล่างเพื่อเข้าใช้งาน</p>
+    <button class="btn" data-act="reload">${I.refresh}ตรวจสอบอีกครั้ง</button></div></div>`;
+}
+
+/* ========================= sheets & toast ========================= */
+let sheetOpen = null;
+function openSheet(html, onClose) {
+  closeSheet(true);
+  const el = document.createElement("div");
+  el.className = "scrim";
+  el.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;
+  el.addEventListener("click", e => { if (e.target === el) closeSheet(); });
+  $("#layer").appendChild(el);
+  sheetOpen = { el, onClose };
+  return el;
+}
+function closeSheet(silent) {
+  if (!sheetOpen) return false;
+  const s = sheetOpen; sheetOpen = null; s.el.remove();
+  if (!silent && s.onClose) s.onClose();
+  return true;
+}
+let toastTimer;
+function toast(msg, bad) {
+  document.querySelectorAll(".toast").forEach(t => t.remove());
+  const t = document.createElement("div");
+  t.className = "toast" + (bad ? " bad" : "");
+  t.textContent = msg;
+  document.body.appendChild(t);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.remove(), bad ? 6000 : 2600);
+}
+function confirmSheet(title, msg, okLabel, cls) {
+  return new Promise(res => {
+    const el = openSheet(`<h3>${esc(title)}</h3><p class="muted">${msg}</p><div class="btns2"><button class="btn soft" data-r="0">ยกเลิก</button><button class="btn ${cls || ""}" data-r="1">${esc(okLabel)}</button></div>`, () => res(false));
+    el.querySelectorAll("[data-r]").forEach(b => b.addEventListener("click", () => { const v = b.dataset.r === "1"; closeSheet(true); res(v); }));
+  });
+}
+function destSheet(kind, current, onPick) {
+  const list = S.dests.filter(d => d.type === kind);
+  const normal = list.filter(d => !d.headOnly), special = list.filter(d => d.headOnly);
+  const opt = d => `<button class="opt ${d.name === current ? "on" : ""}" data-name="${esc(d.name)}"><span>${esc(d.name)}</span>${d.name === current ? I.check : ""}</button>`;
+  const el = openSheet(`<h3>${kind === "OUT" ? "จ่ายให้หน่วยเบิก" : "รับจาก"}</h3><p class="faint" style="font-size:13px;margin:0 0 10px">ระบบจำค่านี้ไว้ใช้กับทุกรายการถัดไป</p>
+    <div class="opt-list">${normal.map(opt).join("")}</div>${special.length ? `<div class="sec-title"><span>เฉพาะหัวหน้าคลัง</span></div><div class="opt-list">${special.map(opt).join("")}</div>` : ""}`);
+  el.querySelectorAll("[data-name]").forEach(b => b.addEventListener("click", () => { closeSheet(true); onPick(b.dataset.name); }));
+}
+
+/* ========================= drug screen ========================= */
+function resolveCode(raw) {
+  const v = String(raw || "").trim();
+  if (!v) return "";
+  let m = v.match(/[?&]d=([A-Za-z0-9]+)/);
+  if (m) return m[1].toUpperCase();
+  m = v.toUpperCase().match(/\bD\d{4}\b/);
+  if (m) return m[0];
+  const gs = parseGS1(v);
+  if (gs && gs.gtin && S.gtin.get(gs.gtin)) { S.lastGs1 = gs; return S.gtin.get(gs.gtin); }
+  if (/^\d{8,14}$/.test(v) && S.gtin.get(normGtin(v))) return S.gtin.get(normGtin(v));
+  if (S.hx.get(v)) return S.hx.get(v);
+  return S.drugs.get(v.toUpperCase()) ? v.toUpperCase() : "";
+}
+async function openDrug(code, fromUrl) {
+  if (!S.drugs.get(code)) { toast("ไม่พบรหัสยา “" + code + "” ในทะเบียน", true); if (fromUrl) go("home"); return; }
+  S.recentDrugs = [code].concat(S.recentDrugs.filter(c => c !== code)).slice(0, 12);
+  store.set("recentDrugs", S.recentDrugs);
+  const pickItem = S.pick.find(p => p.c === code);
+  const pref = (store.get("unitPref", {}) || {})[code] || "base";
+  S.drug = { code, counts: pickItem && pickItem.q ? { base: String(pickItem.q) } : {}, ui: pickItem && pickItem.q ? "base" : pref, lot: "", exp: "", loading: true, lots: null, recent: null, src: {} };
+  const gs = S.lastGs1; S.lastGs1 = null;
+  if (gs && S.mode === "IN") { if (gs.lot) { S.drug.lot = gs.lot; S.drug.src.lot = "bc"; } if (gs.exp) { S.drug.exp = expToInput(gs.exp); S.drug.src.exp = "bc"; } }
+  if (S.mode === "IN" && S.rx) rxFill(code, true);
+  go("drug", !fromUrl);
+  try {
+    const r = await api("drug", { code });
+    if (!S.drug || S.drug.code !== code) return;
+    const x = S.drugs.get(r.drug.c);
+    if (x) Object.assign(x, r.drug, { _k: x._k });
+    applyOutboxOptimistic();
+    Object.assign(S.drug, { lots: r.lots, recent: r.recent, loading: false });
+    if (r.pending) { const st = stockCodeOf(code); S.putaway = (S.putaway || []).filter(p => p.stock !== st).concat(r.pending).sort((a, b) => (a.time < b.time ? -1 : 1)); }
+  } catch (e) {
+    if (S.drug && S.drug.code === code) S.drug.loading = false;
+    toast("อัปเดตยอดล่าสุดไม่ได้: " + e.message, true);
+  }
+  if (S.view === "drug") render();
+}
+function refreshDrugView() {
+  if (S.view !== "drug") return;
+  const y = window.scrollY;
+  render();
+  window.scrollTo(0, y);
+}
+
+/* ========================= save + outbox ========================= */
+async function doSave() {
+  const D = S.drug, d = S.drugs.get(D.code), s = stockOf(d), mode = S.mode;
+  const base = qtyTotal(D, s);
+  const usedPack = unitsOf(s).some(u => u.q > 1 && Number(D.counts[u.k]) > 0);
+  if (isAbnormal(s, base) && !(await confirmSheet("จำนวนมากผิดปกติ", `ยืนยันบันทึก <b>${fmtN(base)} ${esc(s.u)}</b> ใช่หรือไม่? (ใช้เฉลี่ย ${fmtN(s.av)} ต่อเดือน)`, "ยืนยัน", "m-" + mode))) return;
+  if (mode === "IN" && !(await confirmReceiveDup(d, s))) return;
+  const txn = { id: uid(), code: d.c, type: mode, qty: base, time: new Date().toISOString() };
+  if (mode === "OUT") txn.dest = S.destOut;
+  if (mode === "IN") {
+    txn.dest = S.destIn; txn.lot = D.lot.trim().toUpperCase(); txn.exp = parseExp(D.exp) || ""; txn.doc = S.doc.trim();
+    const ev = rxEvidenceFor(d.c);
+    if (ev.length) txn.ev = ev;
+    const fromImg = Object.keys(D.src || {}).filter(k => D.src[k]);
+    if (fromImg.length) txn.note = "ช่วยกรอกจากภาพ: " + fromImg.map(k => ({ qty: "จำนวน", lot: "Lot", exp: "EXP", doc: "เลขที่เอกสาร" }[k])).join("/");
+  }
+  if (usedPack) txn.note = [qtyBreakdown(D, s, true) + " = " + fmtN(base) + " " + s.u, txn.note].filter(Boolean).join(" · ");
+  const before = s.b;
+  const item = { txn, state: "pending", tries: 0, before };
+  outbox.items.push(item);
+  persistOutbox();
+  applyLocal(txn, s);
+  const pickItem = S.pick.find(p => p.c === d.c);
+  if (pickItem && mode === "OUT") { pickItem.done = true; store.set("pick", S.pick); }
+  showResult(item, d, s);
+  processOutbox();
+}
+function applyLocal(txn, s) {
+  if (txn.type === "OUT") s.b = round2(s.b - txn.qty);
+  else if (txn.type === "IN") s.b = round2(s.b + txn.qty);
+  else s.b = txn.qty;
+  s._pending = true;
+}
+function applyOutboxOptimistic() { outbox.items.forEach(i => { const d = S.drugs.get(i.txn.code); if (d && !i.applied) { /* ยอดจากเซิร์ฟเวอร์ยังไม่รวมรายการค้างส่ง */ applyLocal(i.txn, stockOf(d)); } }); }
+function persistOutbox() { store.set("outbox", outbox.items.map(i => ({ txn: i.txn, state: i.state, tries: i.tries, error: i.error, before: i.before }))); }
+async function processOutbox() {
+  if (outbox.busy) return;
+  outbox.busy = true;
+  try {
+    for (;;) {
+      const item = outbox.items.find(i => i.state === "pending");
+      if (!item) break;
+      try {
+        const r = await api("save", { txn: item.txn });
+        outbox.items.splice(outbox.items.indexOf(item), 1);
+        persistOutbox();
+        const x = S.drugs.get(r.drug ? r.drug.c : item.txn.code);
+        if (x && r.drug) { Object.assign(x, r.drug, { _k: x._k }); delete x._pending; }
+        outbox.items.forEach(i => { const dd = S.drugs.get(i.txn.code); if (dd && stockOf(dd) === x) applyLocal(i.txn, x); });
+        if (r.txn) { r.txn.bal = r.balance; S.recentTx = [r.txn].concat((S.recentTx || []).filter(t => t.id !== r.txn.id)).slice(0, 5); if (S.drug && S.drug.recent && stockOf(S.drugs.get(S.drug.code)) === x) S.drug.recent = [r.txn].concat(S.drug.recent).slice(0, 6); }
+        if (r.over && S.alerts) S.alerts.neg = Math.max(S.alerts.neg, 1);
+        if (r.txn && r.txn.type === "IN" && r.txn.status !== "ยกเลิก") {
+          if (r.txn.pa === PA_WAIT && !(S.putaway || []).some(p => p.id === r.txn.id)) S.putaway = (S.putaway || []).concat([{ id: r.txn.id, code: r.txn.code, stock: r.txn.stock, name: r.txn.name, qty: r.txn.qty, unit: r.txn.unit, lot: r.txn.lot, exp: r.txn.exp, by: r.txn.by, time: r.txn.time, ev: r.txn.ev || [] }]);
+          if (S.rx) { S.rx.received[r.txn.stock] = { qty: r.txn.qty, time: r.txn.time }; persistRx(); }
+        }
+        resolveWaiter(item.txn.id, { ok: true, r });
+      } catch (e) {
+        if (e.network) {
+          item.tries++;
+          resolveWaiter(item.txn.id, { ok: false, queued: true, e });
+          persistOutbox();
+          await new Promise(r => setTimeout(r, Math.min(30000, 2000 * item.tries)));
+          if (!navigator.onLine) await new Promise(r => window.addEventListener("online", r, { once: true }));
+        } else {
+          item.state = "failed"; item.error = e.message;
+          persistOutbox();
+          resolveWaiter(item.txn.id, { ok: false, e });
+        }
+      }
+      renderTabbar();
+      if (S.view === "home" || S.view === "history") render();
+      else refreshDrugView();
+    }
+  } finally { outbox.busy = false; renderTabbar(); }
+}
+function resolveWaiter(id, v) { const w = outbox.waiters[id]; if (w) { delete outbox.waiters[id]; w(v); } }
+function waitFor(id, ms) { return new Promise(res => { outbox.waiters[id] = res; setTimeout(() => { if (outbox.waiters[id]) { delete outbox.waiters[id]; res({ ok: false, timeout: true }); } }, ms); }); }
+
+function showResult(item, d, s) {
+  const t = item.txn;
+  const dest = t.dest ? (t.type === "OUT" ? " → " : " ← ") + t.dest : "";
+  const qtyTxt = t.type === "COUNT" ? "นับได้ " + fmtN(t.qty) : (t.type === "OUT" ? "จ่าย " : "รับ ") + fmtN(t.qty);
+  const body = (state, extra) => `
+    <div class="result-ico ${state === "ok" ? "ok" : state === "bad" ? "bad" : "wait"} ${state === "spin" ? "spin" : ""}">${state === "ok" ? I.check : state === "bad" ? I.alert : state === "spin" ? I.refresh : I.cloud}</div>
+    <h3 style="text-align:center">${state === "ok" ? "บันทึกแล้ว" : state === "bad" ? "บันทึกไม่สำเร็จ" : state === "spin" ? "กำลังบันทึก…" : "เก็บไว้ในเครื่อง รอส่ง"}</h3>
+    <p class="muted" style="text-align:center;margin:2px 0 12px">${esc(d.n)}</p>
+    <div class="card"><dl class="kv"><dt>${T[t.type]}</dt><dd>${esc(qtyTxt)} ${esc(s.u)}${esc(dest)}</dd>
+      ${t.lot || t.exp ? `<dt>Lot / หมดอายุ</dt><dd>${esc(t.lot || "-")} · ${fmtExp(t.exp)}</dd>` : ""}
+      <dt>คงเหลือ</dt><dd class="num" style="${s.b < 0 ? "color:var(--neg)" : ""}">${fmtN(s.b)} ${esc(s.u)}${state === "ok" ? "" : " (ประมาณ)"}</dd>
+      <dt>ผู้บันทึก</dt><dd>${esc(S.me.name)} · ${fmtTime(t.time)}</dd></dl></div>
+    ${extra || ""}
+    ${t.type === "IN" ? `<div class="pa-banner" style="margin-top:10px">${hgSvg()}<span class="grow"><b>อย่าลืมจัดขึ้นชั้น</b><br><small>วางยาที่ ${esc(locLine(d))} แล้วสแกนฉลากในเมนู “รอจัดขึ้นชั้น” หรือกดยืนยันที่หน้ายา</small></span></div>` : ""}
+    <div class="stack" style="margin-top:12px">
+      ${t.type === "IN" && rxNext(t.code) ? `<button class="btn m-IN" data-r="next">${I.chev}รับรายการถัดไปในใบนี้: ${esc(rxNext(t.code).n)}</button>` : ""}
+      <button class="btn ${t.type === "IN" && rxNext(t.code) ? "ghost" : "m-" + t.type}" data-r="scan">${I.scan}สแกนรายการถัดไป</button>
+      <div class="btns2"><button class="btn ghost sm" data-r="edit">${I.edit}แก้ไข</button><button class="btn ghost sm" data-r="home">${I.home}หน้าแรก</button></div>
+    </div>`;
+  const el = openSheet(body("spin"));
+  const wire = () => el.querySelectorAll("[data-r]").forEach(b => b.addEventListener("click", () => {
+    const r = b.dataset.r;
+    closeSheet(true);
+    if (r === "scan") scan();
+    else if (r === "next") { const n = rxNext(t.code); if (n) openDrug(n.c); }
+    else if (r === "home") go("home");
+    else if (r === "edit") { const q = outbox.items.find(i => i.txn.id === t.id); if (q) openQueued(t.id); else editTx(t.id); }
+    else if (r === "retry") { const q = outbox.items.find(i => i.txn.id === t.id); if (q) { q.state = "pending"; delete q.error; persistOutbox(); showResult(q, d, s); processOutbox(); } }
+    else if (r === "discard") discardQueued(t.id);
+  }));
+  wire();
+  waitFor(t.id, 7000).then(v => {
+    if (!sheetOpen || sheetOpen.el !== el) return;
+    const sh = el.querySelector(".sheet");
+    if (v.ok) {
+      const x = stockOf(S.drugs.get(t.code)) || s;
+      sh.innerHTML = `<div class="grab"></div>` + body("ok", v.r.over ? `<div class="warn" style="margin-top:10px">${I.alert}<span>ยอดติดลบ — ติดป้าย “จ่ายเกินยอด” แล้ว หัวหน้าคลังจะเห็นในรายการรอลงรับ</span></div>` : "").replace(/(ประมาณ)/, "");
+      sh.querySelector(".kv dd.num").textContent = fmtN(x.b) + " " + x.u;
+      wire();
+      if (S.settings.autoScan) setTimeout(() => { if (sheetOpen && sheetOpen.el === el) { closeSheet(true); scan(); } }, 900);
+    } else if (v.e && !v.queued) {
+      sh.innerHTML = `<div class="grab"></div>` + body("bad", `<div class="err-box" style="margin-top:10px">${esc(v.e.message)}</div>
+        <div class="btns2" style="margin-top:10px"><button class="btn sm" data-r="retry">${I.refresh}ลองส่งใหม่</button><button class="btn danger sm" data-r="discard">${I.x}ทิ้งรายการนี้</button></div>`);
+      wire();
+    } else {
+      sh.innerHTML = `<div class="grab"></div>` + body("wait", `<p class="faint" style="font-size:13px;text-align:center;margin:8px 0 0">สัญญาณไม่ดี — รายการเก็บไว้ในเครื่องและจะส่งอัตโนมัติ (ดูได้ที่ “ประวัติ”)</p>`);
+      wire();
+    }
+  });
+}
+function openQueued(id) {
+  const item = outbox.items.find(i => i.txn.id === id);
+  if (!item) return;
+  const d = S.drugs.get(item.txn.code) || { n: item.txn.code };
+  const el = openSheet(`<h3>${item.state === "failed" ? "ส่งไม่สำเร็จ" : "รอส่งข้อมูล"}</h3><p class="muted">${esc(d.n)} · ${T[item.txn.type]} ${fmtN(item.txn.qty)}</p>
+    ${item.error ? `<div class="err-box">${esc(item.error)}</div>` : `<p class="faint" style="font-size:13px">ระบบพยายามส่งแล้ว ${item.tries} ครั้ง จะส่งอัตโนมัติเมื่อมีสัญญาณ</p>`}
+    <div class="btns2" style="margin-top:12px"><button class="btn sm" data-r="retry">${I.refresh}ส่งเดี๋ยวนี้</button><button class="btn danger sm" data-r="discard">${I.x}ทิ้งรายการ</button></div>`);
+  el.querySelector('[data-r="retry"]').addEventListener("click", () => { closeSheet(true); item.state = "pending"; delete item.error; persistOutbox(); processOutbox(); toast("กำลังส่ง…"); });
+  el.querySelector('[data-r="discard"]').addEventListener("click", () => { closeSheet(true); discardQueued(id); });
+}
+async function discardQueued(id) {
+  const item = outbox.items.find(i => i.txn.id === id);
+  if (!item) return;
+  if (!(await confirmSheet("ทิ้งรายการนี้?", "รายการยังไม่ได้บันทึกเข้าระบบ ทิ้งแล้วต้องสแกนบันทึกใหม่", "ทิ้งรายการ", "danger"))) return;
+  outbox.items.splice(outbox.items.indexOf(item), 1);
+  persistOutbox();
+  try { const r = await api("drug", { code: item.txn.code }); const x = S.drugs.get(r.drug.c); if (x) Object.assign(x, r.drug, { _k: x._k }); applyOutboxOptimistic(); } catch (e) { /* offline */ }
+  toast("ทิ้งรายการแล้ว");
+  render();
+}
+
+/* ========================= edit transaction ========================= */
+function findTx(id) {
+  const pools = [S.history && S.history.rows, S.recentTx, S.drug && S.drug.recent, S.card && S.card.rows];
+  for (const p of pools) { const t = (p || []).find(x => x.id === id); if (t) return t; }
+  return null;
+}
+function editTx(id, prev) {
+  const t = findTx(id);
+  if (!t) return toast("ไม่พบรายการ", true);
+  const own = t.userId ? t.userId === S.me.userId : t.by === S.me.name;
+  const editDays = (S.history && S.history.editDays) || S.config.editDays || 3;
+  const inWindow = Date.now() - new Date(t.time).getTime() < editDays * 86400000;
+  const allowed = can("editAny") || (can("editOwn") && own && inWindow);
+  const isVoided = t.status === "ยกเลิก";
+  const st = prev || { qty: String(t.qty), dest: t.dest, lot: t.lot, exp: t.exp ? fmtExp(t.exp) : "", reason: "" };
+  const evHtml = t.type === "IN" ? `<div class="field" style="margin-bottom:10px"><label>หลักฐานการรับ${(t.ev || []).length ? " (" + t.ev.length + " ภาพ)" : ""}</label><div class="ev-strip">
+      ${(t.ev || []).map(id => `<button class="ev-thumb" data-ev="${esc(id)}" aria-label="ดูภาพ"><span class="spinner"></span></button>`).join("")}
+      ${can("IN") && !isVoided ? `<button class="ev-add" id="e-attach">${I.camera}<span>แนบรูป</span></button>` : (t.ev || []).length ? "" : `<span class="faint" style="font-size:13px;align-self:center">ไม่มีภาพ</span>`}</div>
+      ${t.pa ? `<span class="hint" style="color:${t.pa === PA_WAIT ? "var(--low)" : "var(--in)"}">${t.pa === PA_WAIT ? "⏳ รอขึ้นชั้น" : "✓ " + esc(t.pa)}${t.paBy ? " · " + esc(t.paBy) : ""}${t.paAt ? " · " + dayLabel(t.paAt) + " " + fmtTime(t.paAt) : ""}</span>` : ""}</div>` : "";
+  const draw = () => `
+    <h3>${esc(T[t.type])} · ${esc(t.name)}</h3>
+    <p class="faint" style="font-size:13px;margin:0 0 10px">${dayLabel(t.time)} ${fmtTime(t.time)} · ${esc(t.by)}${t.edited ? " · แก้ไขล่าสุด " + esc(t.edited) : ""}</p>${evHtml}
+    ${isVoided ? `<div class="warn">${I.alert}<span>รายการนี้ถูกยกเลิกแล้ว</span></div>` : !allowed ? `<div class="warn">${I.lock}<span>${own ? "เกิน " + editDays + " วันแล้ว — แจ้งหัวหน้าคลังให้แก้ไขแทน" : "แก้ไขได้เฉพาะรายการที่ตนเองบันทึก"}</span></div>` : `
+    <div class="stack">
+      ${t.type !== "COUNT" ? `<div class="field"><label for="e-qty">จำนวน (${esc(t.unit)})${(() => { const dd = S.drugs.get(t.stock || t.code); return dd && (dd.ps || []).length ? " · " + esc(packText(dd)) : ""; })()}</label><input id="e-qty" class="mono" inputmode="decimal" value="${esc(st.qty)}" style="font-size:22px;font-weight:600"></div>` : `<div class="warn" style="background:var(--count-soft);color:var(--count)">${I.count}<span>รายการตรวจนับแก้จำนวนไม่ได้ — ยกเลิกแล้วตรวจนับใหม่</span></div>`}
+      ${t.type === "OUT" ? `<button class="picker" id="e-dest"><span class="grow"><span class="lbl">หน่วยเบิก</span><span class="val">${esc(st.dest)}</span></span>${I.down}</button>` : ""}
+      ${t.type === "IN" ? `<div class="fields2"><div class="field"><label for="e-lot">Lot</label><input id="e-lot" value="${esc(st.lot)}"></div><div class="field"><label for="e-exp">หมดอายุ (ดด/ปปปป)</label><input id="e-exp" inputmode="numeric" value="${esc(st.exp)}"></div></div>` : ""}
+      <div class="field"><label>เหตุผลการแก้ไข (บันทึกในประวัติ)</label><div class="reason">${EDIT_REASONS.map(r => `<button data-reason="${r}" class="${st.reason === r ? "on" : ""}">${r}</button>`).join("")}</div></div>
+      <div class="btns2"><button class="btn danger sm" id="e-void">${I.x}ยกเลิกรายการ</button><button class="btn sm" id="e-save">${I.check}บันทึกการแก้ไข</button></div>
+    </div>`}`;
+  const el = openSheet(draw());
+  const sh = el.querySelector(".sheet");
+  const grab = () => {
+    const q = sh.querySelector("#e-qty"), l = sh.querySelector("#e-lot"), x = sh.querySelector("#e-exp");
+    if (q) st.qty = q.value; if (l) st.lot = l.value; if (x) st.exp = x.value;
+  };
+  const wire = () => {
+    sh.querySelectorAll("[data-ev]").forEach(b => {
+      b.addEventListener("click", () => openViewer(b.dataset.ev, (b.querySelector("img") || {}).src));
+      evThumb(b.dataset.ev).then(u => { b.innerHTML = `<img src="${u}" alt="">`; }).catch(() => { b.innerHTML = `<span class="st" style="position:static;background:none;color:var(--ink-3)">เปิดไม่ได้</span>`; });
+    });
+    const at = sh.querySelector("#e-attach");
+    if (at) at.addEventListener("click", () => { closeSheet(true); attachCtx = t.id; fileInputs().cam.click(); });
+    sh.querySelectorAll("[data-reason]").forEach(b => b.addEventListener("click", () => { grab(); st.reason = b.dataset.reason; sh.innerHTML = '<div class="grab"></div>' + draw(); wire(); }));
+    const dB = sh.querySelector("#e-dest");
+    if (dB) dB.addEventListener("click", () => { grab(); destSheet("OUT", st.dest, n => { st.dest = n; editTx(id, st); }); });
+    const sv = sh.querySelector("#e-save"), vd = sh.querySelector("#e-void");
+    if (sv) sv.addEventListener("click", () => submit(false));
+    if (vd) vd.addEventListener("click", () => submit(true));
+  };
+  async function submit(isVoid) {
+    grab();
+    if (!st.reason) return toast("เลือกเหตุผลการแก้ไขก่อน", true);
+    const p = { id: t.id, reason: st.reason };
+    if (isVoid) {
+      if (!(await confirmSheet("ยกเลิกรายการนี้?", "ยอดคงเหลือจะถูกปรับคืน และรายการจะแสดงเป็น “ยกเลิก” (ไม่ถูกลบ ตรวจสอบย้อนหลังได้)", "ยืนยันยกเลิก", "danger"))) return editTx(id, st);
+      p.void = true;
+    } else {
+      if (t.type !== "COUNT") p.qty = Number(String(st.qty).replace(/,/g, ""));
+      if (t.type === "OUT") p.dest = st.dest;
+      if (t.type === "IN") {
+        p.lot = String(st.lot || "").trim().toUpperCase();
+        const e = st.exp ? parseExp(st.exp) : "";
+        if (e === null) return toast("วันหมดอายุไม่ถูกต้อง", true);
+        p.exp = e;
+      }
+    }
+    closeSheet(true);
+    toast("กำลังบันทึก…");
+    try {
+      const r = await api("edit", p);
+      const x = S.drugs.get(r.drug.c);
+      if (x) Object.assign(x, r.drug, { _k: x._k });
+      applyOutboxOptimistic();
+      [S.history && S.history.rows, S.recentTx, S.drug && S.drug.recent, S.card && S.card.rows].forEach(pool => (pool || []).forEach((y, i) => { if (y.id === t.id) pool[i] = Object.assign({}, y, r.txn, { bal: y.bal }); }));
+      toast(isVoid ? "ยกเลิกรายการแล้ว · คงเหลือ " + fmtN(r.balance) : "แก้ไขแล้ว · คงเหลือ " + fmtN(r.balance));
+      if (S.view === "card") openCard(true); else if (S.view === "drug") openDrug(S.drug.code, true); else render();
+    } catch (e) { toast(e.message, true); }
+  }
+  wire();
+}
+
+/* ========================= edit drug (หัวหน้าคลัง) ========================= */
+function editDrug() {
+  const d = S.drugs.get(S.drug.code);
+  const el = openSheet(`<h3>แก้ไขข้อมูลยา</h3><p class="faint" style="font-size:13px;margin:0 0 10px">${esc(d.c)} · ${esc(d.n)}</p>
+    <div class="stack">
+      <div class="fields2"><div class="field"><label for="d-loc">ตำแหน่งหลัก</label><input id="d-loc" class="mono" value="${esc(d.l)}" placeholder="A03-2-5" autocapitalize="characters"></div>
+      <div class="field"><label for="d-loc2">ตำแหน่งสำรอง</label><input id="d-loc2" class="mono" value="${esc(d.l2 || "")}" placeholder="เช่น พาเลท P2" autocapitalize="characters"></div></div>
+      <div class="field"><span class="hint">รูปแบบ: โซน+ตู้-ชั้น-ช่อง เช่น A03-2-5 = โซน A ตู้ 03 ชั้น 2 ช่อง 5 — สแกนที่ชั้นใหม่แล้วแก้ตรงนี้ได้ทันที</span></div>
+      <button class="picker" id="d-form"><span class="ftile" style="--z:${zoneColor(d.z)};width:36px;height:36px;border-radius:10px">${formSvg(d.f || "tab")}</span><span class="grow"><span class="lbl">รูปแบบยา (ไอคอนในแอปและฉลาก)</span><span class="val" style="font-size:14.5px">${esc(FORM_LABEL[d.f] || "ยาเม็ด/แคปซูล")}</span></span>${I.chev}</button>
+      ${(d.gt || []).length ? `<div class="field"><label>บาร์โค้ดผู้ผลิตที่จำไว้ (แตะเพื่อลบ)</label><div class="reason">${d.gt.map(g => `<button data-gt="${esc(g)}" class="mono">${esc(g)} ✕</button>`).join("")}</div></div>` : ""}
+      <button class="picker" id="d-packs"><span class="grow"><span class="lbl">หน่วยบรรจุ</span><span class="val" style="font-size:14.5px">${esc(packText(stockOf(d)) || "ยังไม่ตั้ง — แตะเพื่อตั้ง กล่อง/แผง")}</span></span>${I.chev}</button>
+      <div class="fields2"><div class="field"><label for="d-mn">MIN</label><input id="d-mn" inputmode="numeric" value="${d.mn || ""}"></div><div class="field"><label for="d-mx">MAX</label><input id="d-mx" inputmode="numeric" value="${d.mx || ""}"></div></div>
+      <button class="btn" id="d-save">${I.check}บันทึก</button></div>`);
+  el.querySelector("#d-packs").addEventListener("click", () => { closeSheet(true); packEditor(); });
+  el.querySelector("#d-form").addEventListener("click", () => { closeSheet(true); formSheet(d); });
+  el.querySelectorAll("[data-gt]").forEach(b => b.addEventListener("click", async () => {
+    if (!(await confirmSheet("ลบบาร์โค้ดนี้?", "บาร์โค้ด " + esc(b.dataset.gt) + " จะไม่เปิดยานี้อีก", "ลบ", "danger"))) return editDrug();
+    try { const r = await api("updateDrug", { code: d.c, removeGtin: b.dataset.gt, reason: "ลบบาร์โค้ดผู้ผลิต" }); Object.assign(d, r.drug, { _k: d._k }); setDrugs(S.list); toast("ลบบาร์โค้ดแล้ว"); render(); } catch (e) { toast(e.message, true); }
+  }));
+  el.querySelector("#d-save").addEventListener("click", async () => {
+    const v = id => el.querySelector(id).value.trim();
+    const p = { code: d.c, loc: v("#d-loc").toUpperCase(), loc2: v("#d-loc2").toUpperCase(), min: v("#d-mn"), max: v("#d-mx") };
+    try {
+      const r = await api("updateDrug", p);
+      Object.assign(d, r.drug, { _k: d._k });
+      closeSheet(true); toast("บันทึกข้อมูลยาแล้ว"); render();
+    } catch (e) { toast(e.message, true); }
+  });
+}
+
+/* ========================= หน่วยบรรจุ: ตั้ง/แก้ไข ========================= */
+function packEditor() {
+  const d = S.drugs.get(S.drug.code), s = stockOf(d);
+  const rows = (s.ps || []).slice().sort((a, b) => a.q - b.q).map(p => ({ n: p.n, q: String(p.q) }));
+  if (!rows.length) rows.push({ n: "", q: "" });
+  const presets = packPresets(s.u);
+  const el = openSheet("");
+  const sh = el.querySelector(".sheet");
+  const valid = () => rows.filter(r => String(r.n).trim() || String(r.q).trim());
+  const preview = () => {
+    const errs = packErrors(rows, s.u);
+    const ok = valid().filter((r, i) => !errs[rows.indexOf(r)]);
+    return ok.length ? ok.map(r => `<b style="white-space:nowrap">1 ${esc(String(r.n).trim())} : ${fmtN(Number(String(r.q).replace(/,/g, "")))} ${esc(s.u)}</b>`).join(" · ") : `<span class="faint">ยังไม่มีหน่วยบรรจุ — จะกดนับเป็น ${esc(s.u)} อย่างเดียว</span>`;
+  };
+  const draw = () => {
+    const errs = packErrors(rows, s.u);
+    sh.innerHTML = `<div class="grab"></div><h3>หน่วยบรรจุ</h3>
+      <p class="faint" style="font-size:13px;margin:0 0 10px">${esc(s.c)} · ${esc(s.n)}<br>หน่วยนับในคลัง: <b>${esc(s.u)}</b> — ยอดทุกอย่างยังบันทึกเป็น${esc(s.u)} ระบบแปลงให้</p>
+      <div class="stack" style="gap:8px">
+        ${rows.map((r, i) => `<div class="pack-row"><span>1</span><input class="pk-n ${errs[i] && /ชื่อ/.test(errs[i]) ? "bad" : ""}" data-i="${i}" value="${esc(r.n)}" placeholder="กล่อง" maxlength="15" aria-label="ชื่อหน่วยที่ ${i + 1}">
+          <span>=</span><input class="pk-q mono ${errs[i] && /จำนวน|ซ้ำ/.test(errs[i]) ? "bad" : ""}" data-i="${i}" value="${esc(r.q)}" placeholder="500" inputmode="numeric" aria-label="จำนวนต่อหน่วยที่ ${i + 1}">
+          <span>${esc(s.u)}</span><button class="icon-btn" data-del="${i}" aria-label="ลบแถว">${I.x}</button></div>
+          <div class="hint bad" data-err="${i}" style="font-size:12.5px;margin:-4px 0 0 18px">${esc(errs[i])}</div>`).join("")}
+        ${rows.length < 4 ? `<button class="link" id="pk-add" style="justify-self:start">${I.plus}เพิ่มหน่วย (สูงสุด 4)</button>` : ""}
+        <div class="field"><label>ตัวเลือกด่วน — แตะเพื่อเติม</label><div class="reason">${presets.map(p => `<button data-pre="${p[0]}|${p[1]}">${p[0]} ${fmtN(p[1])}</button>`).join("")}</div></div>
+        <div class="pack-preview" id="pk-prev">จะแสดงบนฉลากและในแอปเป็น: ${preview()}</div>
+        <button class="btn" id="pk-save">${I.check}บันทึกหน่วยบรรจุ</button>
+        ${(s.ps || []).length ? `<button class="btn danger sm" id="pk-clear">${I.x}ลบหน่วยบรรจุทั้งหมด</button>` : ""}
+      </div>`;
+    sh.querySelectorAll(".pk-n, .pk-q").forEach(inp => inp.addEventListener("input", () => {
+      const i = +inp.dataset.i;
+      rows[i][inp.classList.contains("pk-n") ? "n" : "q"] = inp.value;
+      const e2 = packErrors(rows, s.u);
+      sh.querySelectorAll("[data-err]").forEach(x => { x.textContent = e2[+x.dataset.err] || ""; });
+      sh.querySelector("#pk-prev").innerHTML = "จะแสดงบนฉลากและในแอปเป็น: " + preview();
+    }));
+    sh.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => { rows.splice(+b.dataset.del, 1); if (!rows.length) rows.push({ n: "", q: "" }); draw(); }));
+    const add = sh.querySelector("#pk-add");
+    if (add) add.addEventListener("click", () => { rows.push({ n: "", q: "" }); draw(); const last = sh.querySelectorAll(".pk-n"); if (last.length) last[last.length - 1].focus(); });
+    sh.querySelectorAll("[data-pre]").forEach(b => b.addEventListener("click", () => {
+      const [n, q] = b.dataset.pre.split("|");
+      if (rows.some(r => String(r.n).trim() === n && Number(String(r.q).replace(/,/g, "")) === +q)) return toast("มี " + n + " " + q + " อยู่แล้ว");
+      const blank = rows.find(r => !String(r.n).trim() && !String(r.q).trim());
+      if (blank) { blank.n = n; blank.q = q; }
+      else if (rows.length < 4) rows.push({ n, q });
+      else return toast("ตั้งได้สูงสุด 4 หน่วย — ลบแถวที่ไม่ใช้ก่อน", true);
+      draw();
+    }));
+    const submit = async packs => {
+      try {
+        const r = await api("updateDrug", { code: s.c, packs, reason: packs.length ? "ตั้งหน่วยบรรจุ" : "ลบหน่วยบรรจุ" });
+        const x = S.drugs.get(r.drug.c);
+        if (x) Object.assign(x, r.drug, { _k: x._k });
+        closeSheet(true);
+        if (S.drug) { S.drug.counts = {}; if (!unitsOf(stockOf(S.drugs.get(S.drug.code))).some(u => u.k === S.drug.ui)) S.drug.ui = "base"; }
+        toast(packs.length ? "บันทึกหน่วยบรรจุแล้ว — พิมพ์ฉลากใหม่เมื่อสะดวก" : "ลบหน่วยบรรจุแล้ว");
+        refreshDrugView();
+      } catch (e) { toast(e.message, true); }
+    };
+    sh.querySelector("#pk-save").addEventListener("click", () => {
+      const errs = packErrors(rows, s.u);
+      if (errs.some(Boolean)) return toast("แก้ช่องที่ขึ้นสีแดงก่อนบันทึก", true);
+      submit(valid().map(r => ({ n: String(r.n).trim(), q: Number(String(r.q).replace(/,/g, "")) })));
+    });
+    const clr = sh.querySelector("#pk-clear");
+    if (clr) clr.addEventListener("click", async () => { if (await confirmSheet("ลบหน่วยบรรจุทั้งหมด?", "จะเหลือกดนับเป็น " + esc(s.u) + " อย่างเดียว", "ลบ", "danger")) submit([]); else packEditor(); });
+  };
+  draw();
+}
+
+/* ========================= card ========================= */
+async function openCard(silent) {
+  const code = S.drug ? S.drug.code : null;
+  if (!code) return;
+  if (!silent) { S.card = null; go("card"); }
+  try { S.card = await api("card", { code, limit: 120 }); }
+  catch (e) { toast(e.message, true); S.card = { drug: stockOf(S.drugs.get(code)), rows: [], complete: false }; }
+  if (S.view === "card") render();
+}
+
+/* ========================= scanner ========================= */
+let wedge = { buf: "", t: 0 };
+document.addEventListener("keydown", e => {
+  if (!S.me) return;
+  const tag = (e.target.tagName || "").toLowerCase();
+  if (tag === "input" && e.target.id !== "q") return;
+  const now = Date.now();
+  if (now - wedge.t > 120) wedge.buf = "";
+  wedge.t = now;
+  if (e.key === "Enter") {
+    if (wedge.buf.length >= 4) { const c = resolveCode(wedge.buf); wedge.buf = ""; if (c) { e.preventDefault(); if (tag === "input") { S.search = ""; } openDrug(c); } }
+    return;
+  }
+  if (e.key.length === 1) wedge.buf += e.key;
+});
+/** เปิดกล้องสแกน 1 ครั้ง → ข้อความใน QR/บาร์โค้ด ("" = ยกเลิก) */
+async function scanRaw(purpose) {
+  if (S.demo) return new Promise(res => demoScanSheet(c => res(c || ""), purpose === "putaway" ? Array.from(new Set((S.putaway || []).map(p => p.code))).slice(0, 9) : null));
+  try {
+    if (S.inLiff && liff.isApiAvailable && liff.isApiAvailable("scanCodeV2")) { const r = await liff.scanCodeV2(); return (r && r.value) || ""; }
+    return await webScan();
+  } catch (e) {
+    if (String(e && e.message).match(/cancel/i)) return "";
+    toast("เปิดกล้องไม่ได้: " + (e.message || e) + " — พิมพ์ค้นหาแทนได้", true);
+    if (purpose !== "putaway") manualSheet();
+    return "";
+  }
+}
+async function scan() {
+  if (!S.me) return;
+  const raw = await scanRaw();
+  if (!raw) return;
+  const code = resolveCode(raw);
+  if (!code) {
+    const gs = parseGS1(raw), g = (gs && gs.gtin) || (/^\d{8,14}$/.test(String(raw).trim()) ? normGtin(raw) : "");
+    toast(g ? "บาร์โค้ดผู้ผลิต " + g + " ยังไม่ผูกกับยาในระบบ — สแกน QR ที่ชั้น แล้วถ่ายรูปกล่องเพื่อจำบาร์โค้ด" : "QR นี้ไม่ใช่ฉลากยาของคลัง: " + String(raw).slice(0, 40), true);
+    return;
+  }
+  if (navigator.vibrate) try { navigator.vibrate(40); } catch (e) { /* */ }
+  openDrug(code);
+}
+function webScan() {
+  return new Promise((resolve, reject) => {
+    const wrap = document.createElement("div");
+    wrap.className = "cam";
+    wrap.innerHTML = `<header><b>สแกน QR / บาร์โค้ดที่ฉลากยา</b><button class="icon-btn" style="background:rgba(255,255,255,.15);color:#fff" aria-label="ปิด">${I.x}</button></header>
+      <div id="reader"><video playsinline muted></video><div class="frame"><div></div></div></div>
+      <footer><button class="btn ghost sm" style="max-width:260px">${I.keyboard}พิมพ์รหัสแทน</button></footer>`;
+    document.body.appendChild(wrap);
+    let stream = null, stop = false, h5 = null;
+    const done = (v, err) => {
+      stop = true;
+      if (stream) stream.getTracks().forEach(t => t.stop());
+      if (h5) h5.stop().catch(() => {});
+      wrap.remove();
+      err ? reject(err) : resolve(v);
+    };
+    wrap.querySelector("header button").onclick = () => done("");
+    wrap.querySelector("footer button").onclick = () => { done(""); manualSheet(); };
+    const video = wrap.querySelector("video");
+    if ("BarcodeDetector" in window) {
+      const want = ["qr_code", "code_128", "data_matrix", "ean_13", "ean_8", "upc_a"];
+      const det = new BarcodeDetector({ formats: want });
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(s => {
+        stream = s; video.srcObject = s; video.play();
+        const tick = async () => {
+          if (stop) return;
+          try { const c = await det.detect(video); if (c && c[0]) return done(c[0].rawValue); } catch (e) { /* frame not ready */ }
+          setTimeout(tick, 160);
+        };
+        tick();
+      }).catch(e => done("", e));
+      return;
+    }
+    // fallback: html5-qrcode (iOS Safari / LINE iOS)
+    video.remove();
+    const s = document.createElement("script");
+    s.src = "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js";
+    s.onload = () => {
+      h5 = new Html5Qrcode("reader", { formatsToSupport: [0, 5, 6, 9, 10, 14] });
+      h5.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, txt => done(txt), () => {}).catch(e => done("", e));
+    };
+    s.onerror = () => done("", new Error("โหลดตัวสแกนไม่ได้"));
+    document.head.appendChild(s);
+  });
+}
+function manualSheet() {
+  const el = openSheet(`<h3>พิมพ์รหัสยา</h3><p class="faint" style="font-size:13px;margin:0 0 10px">รหัสใต้บาร์โค้ด (D0001) หรือรหัส HOSxP</p>
+    <div class="field"><input id="m-code" class="mono" style="font-size:22px" placeholder="D0175" autocapitalize="characters" autocomplete="off"></div>
+    <button class="btn" style="margin-top:10px" id="m-go">${I.chev}เปิดรายการ</button>`);
+  const inp = el.querySelector("#m-code");
+  setTimeout(() => inp.focus(), 50);
+  const goF = () => { const c = resolveCode(inp.value); if (!c) return toast("ไม่พบรหัส " + inp.value, true); closeSheet(true); openDrug(c); };
+  el.querySelector("#m-go").addEventListener("click", goF);
+  inp.addEventListener("keydown", e => { if (e.key === "Enter") goF(); });
+}
+
+/* ========================= v1.2: รูปแบบยา (ไอคอน) ========================= */
+const FORM_LIST = [
+  ['tab', 'ยาเม็ด/แคปซูล'], ['sachet', 'ยาผง/ซอง'], ['liq', 'ยาน้ำ'], ['inj', 'ยาฉีด/วัคซีน'], ['iv', 'สารน้ำ'],
+  ['herb', 'สมุนไพร'], ['cream', 'ครีม/ขี้ผึ้ง (หลอด)'], ['jar', 'ครีม (กระปุก/ตลับ)'], ['eye', 'ยาตา'], ['ear', 'ยาหยอดหู'],
+  ['nose', 'ยาจมูก'], ['inhaler', 'ยาสูดพ่น'], ['neb', 'ยาพ่นฝอยละออง'], ['lotion', 'โลชั่น/แชมพู'], ['antiseptic', 'น้ำยาฆ่าเชื้อ'],
+  ['mouth', 'ยาในช่องปาก'], ['supp', 'ยาเหน็บ/ยาสอด'], ['enema', 'ยาสวน'], ['patch', 'แผ่นแปะ/ปิดแผล'], ['soap', 'สบู่']
+];
+const FORM_LABEL = {};
+FORM_LIST.forEach(f => { FORM_LABEL[f[0]] = f[1]; });
+
+/** ชื่อในชีต ("ยาตา" หรือรหัส "eye") → รหัสรูปแบบยา; ไม่รู้จัก → "" */
+function formCode(text) {
+  const t = String(text === null || text === undefined ? '' : text).trim();
+  if (!t) return '';
+  if (FORM_LABEL[t.toLowerCase()]) return t.toLowerCase();
+  const hit = FORM_LIST.find(f => f[1] === t) || FORM_LIST.find(f => f[1].split(/[\/ (]/)[0] === t.split(/[\/ (]/)[0]);
+  return hit ? hit[0] : '';
+}
+
+/** เดารูปแบบยาจากชื่อ หน่วย และโซน (ใช้เมื่อชีตยังไม่ได้ระบุ) */
+function inferForm(name, unit, zone) {
+  const n = String(name || '').toLowerCase(), u = String(unit || '').toLowerCase().trim(), z = String(zone || '').toUpperCase();
+  const has = re => re.test(n);
+  if (z === 'H') return 'herb';
+  if (has(/patch|แผ่นแปะ|tulle/)) return 'patch';
+  if (has(/supposit|vag\.?\s*tab|ยาสอด|ยาเหน็บ|pessar|ovule/)) return 'supp';
+  if (has(/enema|ยาสวน/)) return 'enema';
+  if (has(/\beye\b|(?<![a-z])oph|ยาตา|หยอดตา|tear|น้ำตาเทียม|^timolol|tetracaine eye/)) return 'eye';
+  if (has(/\bear\b|หยอดหู/)) return 'ear';
+  if (has(/nasal|จมูก/)) return 'nose';
+  if (has(/\bnb\b|nebul|respule|ventolin solution|พ่นฝอย/)) return 'neb';
+  if (has(/inhal|haler|respimat|ellipta|spiriva|turbu|accu|\bevo\b|evo\./)) return 'inhaler';
+  if (has(/mouth ?wash|lozenge|ยาอม|oral paste|viscous|gargle|บ้วนปาก/)) return 'mouth';
+  if (has(/\bsoap\b|สบู่/)) return 'soap';
+  if (has(/shampoo|แชมพู|lotion|โลชั่น/)) return 'lotion';
+  if (has(/alcohol|povid|iodine|chlorhex|antiseptic|scrub|peroxide|แอลกอฮอล์/)) return 'antiseptic';
+  if (has(/cream|ointment|\boint\b|jelly|\bgel\b|paste|ครีม|ขี้ผึ้ง/)) return /กระปุก|ตลับ|jar/.test(u) ? 'jar' : 'cream';
+  if (has(/\bopv\b|rotarix|rotasiil|\brota\b|oral vaccine/)) return 'liq';
+  if (z === 'D') return 'iv';
+  const injUnit = /^(amp|ampule|vial|syringe|dose|ยูนิต|prefilled pen|mg|จุด)/.test(u);
+  const injName = /\binj|injection|vaccine|insulin|immunoglob|serum|เซรุ่ม|antiserum|ฉีด|vial|\bamp\b|ampule|\bpen\b|syringe|\bbcg\b|\bipv\b|espogen|hypercrit|filgrastim|ri \(|measle|mumps|rubella/.test(n);
+  if (z === 'C' || ((z === 'R' || z === 'N') && (injUnit || injName))) return 'inj';
+  if (z === 'B') return 'liq';
+  if (/syr|syrup|solution|suspension|ยาน้ำ|drops?\b|elixir/.test(n) || u === 'ขวด') return z === 'E' ? 'cream' : 'liq';
+  if (z === 'A' || z === 'N' || z === 'R') return (u === 'ซอง' || /powder|ผง|sachet|granule/.test(n)) ? 'sachet' : 'tab';
+  if (z === 'E') return 'cream';
+  if (/^(เม็ด|แคปซูล|tab|cap)/.test(u)) return 'tab';
+  if (injUnit) return 'inj';
+  return 'tab';
+}
+
+const FORM_ICON = {
+  tab: '<g transform="rotate(-45 12 12)"><path d="M12 8H7.5a4 4 0 0 0 0 8H12z" fill="currentColor" fill-opacity=".3" stroke="none"/><rect x="3.5" y="8" width="17" height="8" rx="4"/><path d="M12 8v8"/></g>',
+  sachet: '<path d="M5.5 5.5 7.2 4l1.7 1.5L10.6 4l1.7 1.5L14 4l1.7 1.5L17.4 4l1.6 1.5V20a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 20V5.5z"/><path d="M5 9h14"/><path d="M9.5 14h.01M12.5 12.5h.01M14.5 15.5h.01M11 17h.01M13 18.5h.01M9.5 18h.01"/>',
+  liq: '<path d="M9.5 2.5h5v3h-5z"/><path d="M9 5.5h6l1.8 2.8V20a1.5 1.5 0 0 1-1.5 1.5H8.7A1.5 1.5 0 0 1 7.2 20V8.3z"/><path d="M7.2 11.5h9.6v6H7.2" fill="currentColor" fill-opacity=".22"/>',
+  inj: '<g transform="rotate(-45 12 12)"><path d="M1.5 12h4"/><rect x="5.5" y="9" width="10" height="6" rx="1"/><path d="M8.5 9v2.2M11 9v2.2M13.5 9v2.2"/><path d="M5.5 12.6h5v2.4h-5z" fill="currentColor" fill-opacity=".3" stroke="none"/><path d="M15.5 12h4M19.5 9.5v5M15.5 7.5v9"/></g>',
+  iv: '<path d="M10.5 5V3h3v2"/><path d="M6.5 5h11a1 1 0 0 1 1 1v8.5a4.5 4.5 0 0 1-4.5 4.5h-4a4.5 4.5 0 0 1-4.5-4.5V6a1 1 0 0 1 1-1z"/><path d="M9 8.5h3M9 11h2M9 13.5h3"/><path d="M12 19v3"/>',
+  herb: '<path d="M20 3.5C9 3.8 4 9.5 4 16a4 4 0 0 0 4 4c6.8 0 12-5.2 12-16.5z" fill="currentColor" fill-opacity=".18"/><path d="M3 21 15 9"/><path d="M8.5 15.5h4M11.5 12.5v-3"/>',
+  cream: '<g transform="rotate(35 12 12)"><path d="M6.5 2.5h11"/><path d="M7 2.5 8.5 15h7L17 2.5"/><path d="M8 5.5h8" opacity=".5"/><path d="M10.5 15v1.5h3V15"/><rect x="9.5" y="16.5" width="5" height="5" rx="1.2"/></g>',
+  jar: '<rect x="4" y="4" width="16" height="4.5" rx="1.2"/><path d="M8 4v4.5M12 4v4.5M16 4v4.5" opacity=".45"/><path d="M5 8.5h14v9.5a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3z"/><path d="M8 13h8v4H8z" fill="currentColor" fill-opacity=".22"/>',
+  eye: '<path d="M2 14.5s3.6-5.5 10-5.5 10 5.5 10 5.5-3.6 5.5-10 5.5S2 14.5 2 14.5z"/><circle cx="12" cy="14.5" r="2.6"/><path d="M12 1.5s-2.3 2.7-2.3 4.3a2.3 2.3 0 0 0 4.6 0c0-1.6-2.3-4.3-2.3-4.3z" fill="currentColor" fill-opacity=".3"/>',
+  ear: '<path d="M7.5 10a5.5 5.5 0 0 1 11 0c0 3.6-3.6 4.6-3.6 8a3.2 3.2 0 0 1-6 1.5"/><path d="M10.5 10a2.5 2.5 0 0 1 5 0c0 1.8-1.8 2.3-1.8 3.8"/><path d="M4.5 2.5S2.8 4.5 2.8 5.7a1.7 1.7 0 0 0 3.4 0c0-1.2-1.7-3.2-1.7-3.2z" fill="currentColor" fill-opacity=".3"/>',
+  nose: '<path d="M11 2.5h2l1 5h-4z"/><path d="M8.5 7.5h7v2.2h-7z"/><rect x="7.5" y="9.7" width="9" height="11.8" rx="2.2"/><path d="M7.5 14h9" opacity=".5"/><path d="M16 3.2 19 2M16.5 5.2H20M16 7.2l3 1.2"/>',
+  inhaler: '<rect x="8" y="2" width="5.5" height="9.5" rx="1.6" fill="currentColor" fill-opacity=".22"/><path d="M6.5 9h8.5v6.5h4.5a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5H8a1.5 1.5 0 0 1-1.5-1.5z"/><path d="M17.5 18.5h.01"/>',
+  neb: '<path d="M8.2 10h7.6l2.8 6.4a3.4 3.4 0 0 1-3.1 4.6H8.5a3.4 3.4 0 0 1-3.1-4.6z"/><path d="M5.6 14 2.5 12.5M18.4 14l3.1-1.5"/><path d="M9.5 7.5c0-1.7 1.6-1.7 1.6-3.4M13 7.5c0-1.7 1.6-1.7 1.6-3.4" opacity=".7"/><path d="M10 16h4"/>',
+  lotion: '<path d="M8.5 10h7l1.2 2.2V20a1.5 1.5 0 0 1-1.5 1.5H8.8A1.5 1.5 0 0 1 7.3 20v-7.8z"/><path d="M10 10V7.5h4V10"/><path d="M12 7.5V4h5"/><path d="M9.5 4H12"/><path d="M7.3 15h9.4" opacity=".5"/>',
+  antiseptic: '<path d="M9.5 2.5h5v3h-5z"/><path d="M8.7 5.5h6.6l1.7 3V20a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 7 20V8.5z"/><path d="M12 11.5v6M9 14.5h6"/>',
+  mouth: '<path d="M2.5 12c2.2-2.9 4.6-4.5 6.6-4.5 1.1 0 2 .6 2.9 1.2.9-.6 1.8-1.2 2.9-1.2 2 0 4.4 1.6 6.6 4.5-2.4 3.4-5.8 5.2-9.5 5.2S4.9 15.4 2.5 12z" fill="currentColor" fill-opacity=".18"/><path d="M2.5 12c3 .9 6.2 1.3 9.5 1.3s6.5-.4 9.5-1.3"/>',
+  supp: '<g transform="rotate(-38 12 12)"><path d="M12 2.5c3 0 4.6 4.2 4.6 8.4V20H7.4v-9.1c0-4.2 1.6-8.4 4.6-8.4z" fill="currentColor" fill-opacity=".2"/><path d="M7.4 16h9.2"/></g>',
+  enema: '<path d="M12 1.8v5"/><path d="M10.4 6.8h3.2l.6 2.2h-4.4z"/><path d="M7 12.2A3.2 3.2 0 0 1 10.2 9h3.6a3.2 3.2 0 0 1 3.2 3.2v6.1a3.2 3.2 0 0 1-3.2 3.2h-3.6A3.2 3.2 0 0 1 7 18.3z"/><path d="M9.5 13.5v4" opacity=".5"/>',
+  patch: '<path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8l-6 6H6a2 2 0 0 1-2-2z"/><path d="M20 14h-4a2 2 0 0 0-2 2v4"/><rect x="7.5" y="7.5" width="6" height="6" rx="1.2" fill="currentColor" fill-opacity=".22"/>',
+  soap: '<rect x="2.5" y="11" width="15" height="9.5" rx="3" fill="currentColor" fill-opacity=".18"/><path d="M6 15.5h7" opacity=".6"/><circle cx="17.5" cy="5.5" r="2.5"/><circle cx="12" cy="6.5" r="1.5"/><circle cx="21" cy="10" r="1.1"/>'
+};
+/** <svg> ของรูปแบบยา (ใช้ currentColor) */
+function formSvg(code, cls) {
+  const p = FORM_ICON[code] || FORM_ICON.tab;
+  return '<svg class="' + (cls || 'fi') + '" viewBox="0 0 24 24" aria-hidden="true">' + p + '</svg>';
+}
+
+function zoneColor(z) { return (ZONES[z] || [])[5] || "#64748B"; }
+function ftile(d, opts) {
+  opts = opts || {};
+  const pend = !opts.noPa && paOf(d.c).length;
+  return `<span class="ftile${opts.lg ? " lg" : ""}" style="--z:${zoneColor(d.z)}" title="${esc(FORM_LABEL[d.f] || "")}">${formSvg(d.f || "tab")}${pend ? `<span class="hgdot" aria-label="รอขึ้นชั้น">${I.hour}</span>` : ""}</span>`;
+}
+function lchip(d) { return `<span class="lchip" style="--z:${zoneColor(d.z)}">${esc(d.l || "ไม่มีตำแหน่ง")}</span>`; }
+function formSheet(d) {
+  const el = openSheet(`<h3>รูปแบบยา</h3><p class="faint" style="font-size:13px;margin:0 0 10px">${esc(d.c)} · ${esc(d.n)}<br>ใช้กำหนดไอคอนในแอปและบนฉลาก</p>
+    <div class="fgrid">${FORM_LIST.map(f => `<button class="${d.f === f[0] ? "on" : ""}" data-f="${f[0]}">${formSvg(f[0])}<span>${esc(f[1])}</span></button>`).join("")}</div>`);
+  el.querySelectorAll("[data-f]").forEach(b => b.addEventListener("click", async () => {
+    if (b.dataset.f === d.f) return closeSheet(true);
+    try { const r = await api("updateDrug", { code: d.c, form: b.dataset.f, reason: "แก้รูปแบบยา" }); Object.assign(d, r.drug, { _k: d._k }); closeSheet(true); toast("เปลี่ยนเป็น " + FORM_LABEL[b.dataset.f] + " แล้ว"); render(); }
+    catch (e) { toast(e.message, true); }
+  }));
+}
+
+/* ========================= v1.2: นาฬิกาทราย — รอจัดขึ้นชั้น ========================= */
+const PA_WAIT = "รอขึ้นชั้น";
+function hgSvg(cls) {
+  return `<svg class="hg ${cls || "flip"}" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 2.5h11M6.5 21.5h11"/><path d="M8 2.5v2.8c0 2.3 1.9 3.7 4 6.7 2.1-3 4-4.4 4-6.7V2.5M8 21.5v-2.8c0-2.3 1.9-3.7 4-6.7 2.1 3 4 4.4 4 6.7v2.8"/>` +
+    `<path class="st" d="M9.4 5.6h5.2c-.4 1.3-1.5 2.3-2.6 3.7-1.1-1.4-2.2-2.4-2.6-3.7z"/><path class="sb" d="M9.2 20.4h5.6c0-1.6-1.3-2.8-2.8-4.2-1.5 1.4-2.8 2.6-2.8 4.2z"/><path class="ss" d="M12 10.5v8.5"/></svg>`;
+}
+function stockCodeOf(code) { const d = S.drugs.get(code); return d ? stockOf(d).c : code; }
+function paOf(code) { const st = stockCodeOf(code); return (S.putaway || []).filter(p => p.stock === st || p.code === code); }
+function minutesSince(iso) { return Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000)); }
+function elapsed(iso) {
+  const m = minutesSince(iso);
+  if (m < 60) return m + " นาที";
+  if (m < 1440) return Math.floor(m / 60) + " ชม." + (m % 60 ? " " + (m % 60) + " น." : "");
+  return Math.floor(m / 1440) + " วัน " + Math.floor((m % 1440) / 60) + " ชม.";
+}
+const paLate = iso => minutesSince(iso) >= (S.config.putawayWarnHours || 2) * 60;
+const canPa = () => can("putaway") || can("OUT");
+function paCard() {
+  const L = S.putaway || [];
+  if (!L.length || !(canPa() || can("alerts"))) return "";
+  const old = L.reduce((a, b) => (a.time < b.time ? a : b));
+  const late = L.filter(p => paLate(p.time)).length;
+  return `<button class="pa-card ${late ? "late" : ""}" data-act="go" data-arg="putaway"><span class="hgw">${hgSvg()}</span>
+    <span class="grow"><b>รอจัดขึ้นชั้น ${L.length} รายการ</b><small>${late ? `เกิน ${S.config.putawayWarnHours || 2} ชม. ${late} รายการ · ` : ""}รอนานสุด ${elapsed(old.time)} · วางที่ ${esc(S.config.receiveArea || "จุดพักยารับเข้า")}</small></span>${I.chev}</button>`;
+}
+function paBanner(d, s) {
+  const L = paOf(d.c);
+  if (!L.length) return "";
+  const sum = round2(L.reduce((t, p) => t + Number(p.qty || 0), 0));
+  const old = L.reduce((a, b) => (a.time < b.time ? a : b));
+  const big = (s.ps || []).length && sum >= Math.min(...s.ps.map(p => p.q));
+  return `<div class="pa-banner ${paLate(old.time) ? "late" : ""}">${hgSvg()}<span class="grow"><b>รับเข้าแล้ว ยังไม่ขึ้นชั้น</b> ${fmtN(sum)} ${esc(s.u)}${big ? " (≈ " + esc(packBreak(sum, s)) + ")" : ""} · รอ ${elapsed(old.time)}
+    <br><small>อยู่ที่ ${esc(S.config.receiveArea || "จุดพักยารับเข้า")} · ${L.length} ล็อต${L[0].lot ? " · Lot " + esc(L.map(p => p.lot).filter(Boolean).join(", ")) : ""}</small></span>
+    ${canPa() ? `<button class="btn m-IN" data-act="paDrug" data-arg="${esc(d.c)}">${I.check}ขึ้นชั้นแล้ว</button>` : ""}</div>`;
+}
+function vPutaway() {
+  const L = (S.putaway || []).slice().sort((a, b) => (a.time < b.time ? -1 : 1));
+  const rows = L.map(p => {
+    const d = S.drugs.get(p.code) || { c: p.code, n: p.name, z: "", l: "", f: "tab", u: p.unit };
+    const s = stockOf(d) || d;
+    const big = (s.ps || []).length && p.qty >= Math.min(...s.ps.map(x => x.q));
+    return `<div class="item"><button class="row" style="flex:1;min-width:0;text-align:left;gap:12px" data-act="open" data-arg="${esc(d.c)}">${ftile(d, { noPa: true })}
+      <span class="main"><span class="name">${esc(d.n)}</span>
+        <span class="sub">${lchip(d)}<b style="color:var(--in)">＋${fmtN(p.qty)} ${esc(p.unit)}</b>${big ? `<span>≈ ${esc(packBreak(p.qty, s))}</span>` : ""}${p.lot ? `<span>Lot ${esc(p.lot)}</span>` : ""}</span>
+        <span class="sub">รับโดย ${esc(p.by)} · ${dayLabel(p.time)} ${fmtTime(p.time)}${(p.ev || []).length ? ` · <span class="chip ev">${I.camera}${p.ev.length}</span>` : ""}</span></span>
+      <span class="right"><span class="pa-time ${paLate(p.time) ? "late" : ""}">${hgSvg("")}${elapsed(p.time)}</span></span></button>
+      ${canPa() ? `<button class="add-btn ok" data-act="paDone" data-arg="${esc(p.id)}" aria-label="ยืนยันจัดขึ้นชั้นแล้ว">${I.check}</button>` : ""}</div>`;
+  }).join("");
+  return topbar("รอจัดขึ้นชั้น", "รับเข้าแล้ว ยังไม่ยืนยันว่าจัดขึ้นชั้น · เก่าสุดก่อน", `<button class="icon-btn" data-act="paRefresh" aria-label="อัปเดต">${I.refresh}</button>`) + `
+    ${canPa() && L.length ? `<button class="scan-btn m-IN" data-act="paScan" style="margin-bottom:12px"><span class="ico">${I.scan}</span><span><b>สแกนยืนยันขึ้นชั้น</b><small>วางยาที่ช่องแล้วสแกนฉลากที่ชั้น — สแกนต่อเนื่องได้ทีละหลายรายการ</small></span></button>` : ""}
+    ${L.length ? `<div class="list">${rows}</div><p class="faint" style="font-size:13px;text-align:center;margin-top:10px">นาฬิกาทรายเปลี่ยนเป็นสีแดงเมื่อรอเกิน ${S.config.putawayWarnHours || 2} ชั่วโมง · ยืนยันผิดกด “ย้อนกลับ” ได้ทันที</p>`
+      : `<div class="list"><div class="empty">ไม่มีรายการค้าง — จัดขึ้นชั้นครบแล้ว</div></div>`}`;
+}
+let paFetchAt = 0;
+async function refreshPending(force) {
+  if (!S.me || !(canPa() || can("alerts"))) return;
+  if (!force && Date.now() - paFetchAt < 45000) return;
+  paFetchAt = Date.now();
+  try { const r = await api("pending"); S.putaway = r.putaway || []; if (S.view === "home" || S.view === "putaway") render(); else refreshDrugView(); }
+  catch (e) { if (force) toast(e.message, true); }
+}
+async function putawayConfirm(p, label) {
+  const before = (S.putaway || []).slice();
+  const st = p.code ? stockCodeOf(p.code) : "";
+  S.putaway = before.filter(x => p.ids ? p.ids.indexOf(x.id) < 0 : !(x.stock === st || x.code === p.code));
+  rerender();
+  try {
+    const r = await api("putaway", p);
+    S.putaway = r.pending || S.putaway;
+    if (r.none) toast("“" + label + "” ไม่มีรายการรอขึ้นชั้น", true);
+    else snack("✓ จัดขึ้นชั้นแล้ว: " + label, "ย้อนกลับ", async () => {
+      try { const u = await api("putaway", { undo: true, ids: r.done }); S.putaway = u.pending || S.putaway; toast("ย้อนกลับแล้ว — รายการกลับไปรอขึ้นชั้น"); rerender(); }
+      catch (e) { toast(e.message, true); }
+    });
+  } catch (e) { S.putaway = before; toast((e.network ? "ต้องต่ออินเทอร์เน็ตเพื่อยืนยัน — " : "") + e.message, true); }
+  rerender();
+}
+async function putawayScan() {
+  for (;;) {
+    if (!(S.putaway || []).length) { toast("จัดขึ้นชั้นครบทุกรายการแล้ว"); break; }
+    const raw = await scanRaw("putaway");
+    if (!raw) break;
+    const code = resolveCode(raw);
+    if (!code) { toast("QR นี้ไม่ใช่ฉลากยาของคลัง: " + String(raw).slice(0, 40), true); continue; }
+    const d = S.drugs.get(code);
+    if (!paOf(code).length) { toast("“" + d.n + "” ไม่มีรายการรอขึ้นชั้น", true); continue; }
+    if (navigator.vibrate) try { navigator.vibrate(40); } catch (e) { /* */ }
+    await putawayConfirm({ code, method: "scan" }, d.n);
+  }
+}
+function rerender() { if (S.view === "drug") refreshDrugView(); else { const y = window.scrollY; render(); window.scrollTo(0, y); } }
+function snack(msg, label, fn) {
+  document.querySelectorAll(".toast").forEach(t => t.remove());
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.innerHTML = `<span>${esc(msg)}</span><button class="act">${esc(label)}</button>`;
+  t.querySelector("button").addEventListener("click", () => { t.remove(); fn(); });
+  document.body.appendChild(t);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.remove(), 7000);
+}
+
+/* ========================= v1.2: บาร์โค้ดผู้ผลิต (GS1 / EAN) ========================= */
+function normGtin(g) { g = String(g || "").replace(/\D/g, ""); while (g.length > 13 && g[0] === "0") g = g.slice(1); return g; }
+/** GS1 (DataMatrix/GS1-128): "(01)…(17)YYMMDD(10)LOT" หรือข้อความดิบ → {gtin, lot, exp} */
+function parseGS1(text) {
+  const t = String(text || "").trim();
+  if (!t) return null;
+  const f = {};
+  let m, re = /\((\d{2,4})\)([^(]*)/g;
+  while ((m = re.exec(t))) f[m[1]] = m[2].trim();
+  if (!Object.keys(f).length) {
+    const s = t.replace(/^\](d2|C1|Q3|e0)/, "");
+    if (!/^(01|02)\d{14}/.test(s)) return null;
+    let i = 0;
+    while (i < s.length) {
+      const ai = s.substr(i, 2);
+      if (ai === "01" || ai === "02") { f[ai] = s.substr(i + 2, 14); i += 16; }
+      else if (["11", "13", "15", "17"].indexOf(ai) >= 0) { f[ai] = s.substr(i + 2, 6); i += 8; }
+      else if (ai === "10" || ai === "21") { let j = s.indexOf("\x1d", i + 2); if (j < 0) j = s.length; f[ai] = s.slice(i + 2, j); i = j + 1; }
+      else break;
+    }
+  }
+  const r = {};
+  if (f["01"]) r.gtin = normGtin(f["01"]);
+  if (f["10"]) r.lot = f["10"].toUpperCase().replace(/[^A-Z0-9\-\/\.]/g, "").slice(0, 30);
+  if (/^\d{6}$/.test(f["17"] || "")) { const y = 2000 + +f["17"].slice(0, 2), mo = f["17"].slice(2, 4), dd = f["17"].slice(4, 6); if (+mo >= 1 && +mo <= 12) r.exp = y + "-" + mo + (dd !== "00" ? "-" + dd : ""); }
+  if (f["21"]) r.serial = f["21"];
+  return r.gtin || r.lot || r.exp ? r : null;
+}
+const ZX = { p: null };
+function loadZxing() {
+  if (ZX.p) return ZX.p;
+  ZX.p = new Promise((res, rej) => {
+    if (window.ZXingWASM) return res(window.ZXingWASM);
+    const sc = document.createElement("script");
+    sc.src = ZXING.js; sc.onload = () => window.ZXingWASM ? res(window.ZXingWASM) : rej(new Error("ZXing ไม่พร้อม"));
+    sc.onerror = () => rej(new Error("โหลดตัวอ่านบาร์โค้ดไม่ได้"));
+    document.head.appendChild(sc);
+  }).then(Z => {
+    const wasm = ZXING.wasmB64 ? URL.createObjectURL(new Blob([Uint8Array.from(atob(ZXING.wasmB64), c => c.charCodeAt(0))], { type: "application/wasm" })) : new URL(ZXING.wasm, location.href).href;
+    Z.prepareZXingModule({ overrides: { locateFile: (p, prefix) => (p.endsWith(".wasm") ? wasm : prefix + p) } });
+    return Z;
+  });
+  ZX.p.catch(() => { ZX.p = null; });
+  return ZX.p;
+}
+/** อ่านบาร์โค้ดทุกชนิดในภาพ (DataMatrix GS1 บนกล่องยา, EAN-13, QR, Code128) — ทำในเครื่อง ไม่ส่งออก */
+async function decodeBarcodes(canvas) {
+  const Z = await loadZxing();
+  const img = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
+  const res = await Promise.race([
+    Z.readBarcodes(img, { formats: ["DataMatrix", "QRCode", "EAN13", "EAN8", "UPCA", "Code128", "DataBar", "DataBarExp"], tryHarder: true, maxNumberOfSymbols: 8, textMode: "HRI" }),
+    new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 9000))
+  ]);
+  return (res || []).filter(r => r.isValid && r.text).map(r => ({ format: r.format, text: r.text }));
+}
+
+/* ========================= v1.2: ภาพหลักฐาน + อ่านข้อมูลจากภาพ (รอบรับของ) ========================= */
+function rxLoad() {
+  const r = store.get("rx", null);
+  return r && Date.now() - r.at < 12 * 3600000 ? r : null;
+}
+function rxEnsure() { if (!S.rx) S.rx = { at: Date.now(), photos: [], doc: { no: "", type: "", supplier: "" }, received: {}, map: {} }; return S.rx; }
+function persistRx() { if (!S.rx) return store.set("rx", null); store.set("rx", Object.assign({}, S.rx, { photos: S.rx.photos.map(p => { const o = Object.assign({}, p); delete o._b64; delete o._file; if (o.state === "prep" || o.state === "up") o.state = "err", o.err = "ค้างระหว่างส่ง — แตะเพื่อลองใหม่"; return o; }) })); }
+const PH_LABEL = { prep: "เตรียมภาพ…", up: "กำลังอ่าน…", done: "บันทึกแล้ว", err: "ผิดพลาด" };
+function engineLabel(r) { const e = (r && r.engine) || ""; return /^gemini/.test(e) ? "อ่านด้วย AI" : e === "ocr" ? "อ่านด้วย OCR" : e === "demo" ? "ผลอ่านจำลอง" : "จากภาพ"; }
+/** รายการยาทั้งหมดที่อ่านได้จากทุกภาพในรอบนี้ */
+function rxItems() {
+  const R = S.rx;
+  if (!R) return [];
+  const out = [], seen = {};
+  R.photos.forEach(ph => {
+    if (!ph.read || !ph.read.items) return;
+    ph.read.items.forEach((it, i) => {
+      const k = ph.key + ":" + i;
+      let code = R.map[k] || (it.match ? it.match.code : "") || (ph.read.ctxIndex === i && ph.code ? ph.code : "");
+      const st = code ? stockCodeOf(code) : "";
+      const dk = st || (norm(it.name) + "|" + (it.lot || "") + "|" + (it.qty || ""));
+      const prev = seen[dk];
+      if (prev) { // ยาเดียวกันจากหลายภาพ (ใบส่งของ + กล่อง) → รวมข้อมูลที่ขาด
+        const m = Object.assign({}, prev.it);
+        ["qty", "qtyUnit", "packSize", "lot", "exp", "expText", "gtin"].forEach(f => { if (!m[f] && it[f]) m[f] = it[f]; });
+        prev.it = m;
+        return;
+      }
+      seen[dk] = { it, ph, i, k, code, st, engine: ph.read.engine };
+      out.push(seen[dk]);
+    });
+  });
+  return out;
+}
+function rxLineFor(code) {
+  const st = stockCodeOf(code);
+  return rxItems().find(x => x.st === st) || null;
+}
+/** บาร์โค้ดบนกล่อง (GS1) ที่ตรงกับยานี้ หรือถ่ายขณะเปิดยานี้ */
+function rxGs1For(code) {
+  if (!S.rx) return null;
+  const st = stockCodeOf(code);
+  for (const ph of S.rx.photos.slice().reverse()) {
+    if (!ph.gs1) continue;
+    const mapped = ph.gs1.gtin ? S.gtin.get(ph.gs1.gtin) : "";
+    if (mapped && stockCodeOf(mapped) === st) return Object.assign({ mapped: true }, ph.gs1);
+    if (!mapped && ph.code && stockCodeOf(ph.code) === st) return Object.assign({ mapped: false }, ph.gs1);
+  }
+  return null;
+}
+function rxGs1Other(code) {
+  if (!S.rx) return null;
+  const st = stockCodeOf(code);
+  const ph = S.rx.photos.find(p => p.gs1 && p.gs1.gtin && p.code && stockCodeOf(p.code) === st && S.gtin.get(p.gs1.gtin) && stockCodeOf(S.gtin.get(p.gs1.gtin)) !== st);
+  return ph ? S.drugs.get(S.gtin.get(ph.gs1.gtin)) : null;
+}
+function rxPrior() {
+  if (!S.rx) return [];
+  const out = [], seen = {};
+  S.rx.photos.forEach(ph => (ph.prior || []).forEach(p => { if (!seen[p.id]) { seen[p.id] = 1; out.push(p); } }));
+  return out;
+}
+const UNIT_GROUPS = [["solid", /^(เม็ด|tab|tabs|tablet|tablets|แคปซูล|cap|caps|capsule|capsules)$/], ["box", /^(กล่อง|box|boxes|bx|กล)$/], ["bottle", /^(ขวด|bot|bott|bottle|bottles|btl|fl)$/],
+  ["strip", /^(แผง|strip|strips|blister)$/], ["sachet", /^(ซอง|sachet|sachets|sac)$/], ["amp", /^(หลอด|amp|amps|ampule|ampules|ampoule|ampoules|ampul|tube|tubes)$/],
+  ["vial", /^(vial|vials|ไวแอล|ขวดเล็ก)$/], ["bag", /^(ถุง|bag|bags)$/], ["pack", /^(แพ็ก|แพ็ค|pack|packs|pk)$/], ["carton", /^(ลัง|carton|cartons|ctn)$/],
+  ["dozen", /^(โหล|dozen|doz)$/], ["piece", /^(ชิ้น|pcs|pc|ea|each|อัน)$/], ["dose", /^(dose|doses|โดส)$/], ["unit", /^(ยูนิต|unit|units|iu)$/], ["ml", /^(ml|มล|ซีซี|cc)$/]];
+function unitCanon(u) {
+  const t = String(u || "").toLowerCase().replace(/[.\s]/g, "");
+  if (!t) return "";
+  const g = UNIT_GROUPS.find(x => x[1].test(t));
+  return g ? g[0] : t;
+}
+/** แปลงจำนวนในเอกสารเป็นการกรอกในแอป (หน่วยนับ หรือหน่วยบรรจุที่ตั้งไว้) */
+function resolveQty(it, s) {
+  if (!(it.qty > 0)) return null;
+  const cu = unitCanon(it.qtyUnit), U = unitsOf(s);
+  if (!cu) return { counts: { base: String(it.qty) }, total: it.qty, sure: false, warn: "เอกสารไม่ระบุหน่วย — ถือเป็น " + s.u };
+  if (cu === unitCanon(s.u)) return { counts: { base: String(it.qty) }, total: it.qty, sure: true };
+  const pk = U.find(u => u.q > 1 && unitCanon(u.n) === cu);
+  if (pk) {
+    const bad = it.packSize > 1 && it.packSize !== pk.q;
+    return { counts: { [pk.k]: String(it.qty) }, total: round2(it.qty * pk.q), sure: !bad, warn: bad ? `เอกสารระบุ 1 ${it.qtyUnit} = ${fmtN(it.packSize)} แต่ในระบบตั้ง 1 ${pk.n} = ${fmtN(pk.q)} ${s.u} — ตรวจสอบ` : "" };
+  }
+  const thai = { box: "กล่อง", bottle: "ขวด", strip: "แผง", sachet: "ซอง", amp: "หลอด", vial: "ขวด", bag: "ถุง", pack: "แพ็ก", carton: "ลัง", dozen: "โหล", piece: "ชิ้น" }[cu] || String(it.qtyUnit).slice(0, 15);
+  return { counts: null, need: { n: thai, q: it.packSize > 1 ? it.packSize : "" }, qty: it.qty, sure: false };
+}
+function expToInput(iso) { const m = String(iso || "").match(/^(\d{4})-(\d{2})/); return m ? m[2] + "/" + (+m[1] + 543) : ""; }
+/** ใส่ค่าที่อ่านได้ลงช่องกรอก (auto = ใส่เฉพาะช่องที่ยังว่างและมั่นใจ) */
+function rxFill(code, auto) {
+  const D = S.drug;
+  if (!D || D.code !== code || S.mode !== "IN") return false;
+  const d = S.drugs.get(code), s = stockOf(d);
+  const line = rxLineFor(code), gs = rxGs1For(code), it = line && line.it;
+  if (!line && !gs) return false;
+  const src = D.src = D.src || {};
+  let changed = false;
+  const lot = (gs && gs.lot) || (it && it.lot) || "", exp = (gs && gs.exp) || (it && it.exp) || "";
+  if (lot && (!auto || !D.lot)) { D.lot = lot; src.lot = gs && gs.lot ? "bc" : "ai"; changed = true; }
+  if (exp && (!auto || !D.exp)) { D.exp = expToInput(exp); src.exp = gs && gs.exp ? "bc" : "ai"; changed = true; }
+  if (it) {
+    const q = resolveQty(it, s);
+    if (q && q.counts && (!auto || (q.sure && !qtyEntered(D)))) { D.counts = q.counts; D.ui = Object.keys(q.counts)[0]; src.qty = "ai"; changed = true; }
+  }
+  if (S.rx && S.rx.doc.no && !S.doc) { S.doc = S.rx.doc.no; store.set("doc", S.doc); src.doc = "ai"; changed = true; }
+  if (changed) D.rxDone = true;
+  return changed;
+}
+function rxAutoFill(code) { if (rxFill(code, true)) refreshDrugView(); }
+function rxBlock(d, s) {
+  const R = S.rx, max = S.config.maxPhotos || 4;
+  const mode = S.config.readMode || "AI";
+  const hint = mode === "OFF" ? "เก็บภาพเป็นหลักฐานในระบบ (ไม่อ่านข้อมูล)" : mode === "OCR" ? "ระบบอ่านข้อความจากภาพ (OCR) ช่วยกรอก Lot · วันหมดอายุ · จำนวน" : "ระบบอ่านชื่อยา จำนวน Lot วันหมดอายุให้อัตโนมัติ";
+  const photos = R ? R.photos : [];
+  const head = `<div class="rx-head"><span>${I.camera}หลักฐานการรับ${R && R.doc.no ? ` · <b class="mono" style="color:var(--ink)">${esc(R.doc.no)}</b>` : ""}</span>${photos.length ? `<button class="link" data-act="rxEnd">จบรอบรับ</button>` : ""}</div>`;
+  if (!photos.length) return `<div class="rx">${head}<button class="ev-cta" data-act="rxCam">${I.camera}<span><b>ถ่ายใบส่งของ / บิล / กล่องยา</b><small>${hint}</small></span></button>
+    <button class="link" data-act="rxPick" style="justify-self:start">${I.plus}เลือกรูปที่ถ่ายไว้แล้ว</button></div>`;
+  const strip = `<div class="ev-strip">${photos.map(ph => `<button class="ev-thumb ${ph.state === "err" ? "err" : ph.state === "done" ? "ok" : ""}" data-act="rxPhoto" data-arg="${esc(ph.key)}" aria-label="ภาพหลักฐาน">
+      ${ph.thumb ? `<img src="${ph.thumb}" alt="">` : `<span class="spinner"></span>`}<span class="st">${ph.state === "up" || ph.state === "prep" ? `${PH_LABEL[ph.state]}` : ph.dup ? "ภาพซ้ำ" : PH_LABEL[ph.state]}</span></button>`).join("")}
+    ${photos.length < max ? `<button class="ev-add" data-act="rxCam" aria-label="ถ่ายรูปเพิ่ม">${I.camera}<span>ถ่ายเพิ่ม</span></button>` : ""}</div>`;
+  const busy = photos.some(p => p.state === "prep" || p.state === "up");
+  const line = rxLineFor(d.c), gs = rxGs1For(d.c), otherBc = rxGs1Other(d.c);
+  let read = "";
+  if (line || gs) {
+    const it = line ? line.it : {};
+    const q = line ? resolveQty(it, s) : null;
+    const src = (S.drug && S.drug.src) || {};
+    read = `<div class="read-line"><div><span class="src ${gs && !line ? "bc" : ""}">${gs && !line ? "จากบาร์โค้ดกล่อง" : esc(engineLabel(line.ph.read))}</span> <span class="nm">${esc(it.name || d.n)}</span></div>
+      <div class="vals">${it.qty ? `<span>จำนวน <b>${fmtN(it.qty)} ${esc(it.qtyUnit || "")}</b>${it.packSize > 1 ? ` (${fmtN(it.packSize)}/${esc(it.qtyUnit || "หน่วย")})` : ""}</span>` : ""}
+        ${(gs && gs.lot) || it.lot ? `<span>Lot <b class="mono">${esc((gs && gs.lot) || it.lot)}</b>${gs && gs.lot ? ' <span class="src bc">บาร์โค้ด</span>' : ""}</span>` : ""}
+        ${(gs && gs.exp) || it.exp ? `<span>EXP <b>${fmtExp((gs && gs.exp) || it.exp)}</b>${gs && gs.exp ? ' <span class="src bc">บาร์โค้ด</span>' : ""}</span>` : (it.expText ? `<span>EXP “${esc(it.expText)}” (อ่านไม่ชัด)</span>` : "")}</div>
+      ${q && q.warn ? `<div style="color:var(--low)">${esc(q.warn)}</div>` : ""}
+      ${q && q.need ? `<div>เอกสารระบุ <b>${fmtN(q.qty)} ${esc(q.need.n)}</b> — 1 ${esc(q.need.n)} = <input id="rx-pq" class="mono" inputmode="numeric" value="${esc(q.need.q)}" placeholder="?"> ${esc(s.u)}
+        <div class="btns2" style="margin-top:6px"><button class="btn sm m-IN" data-act="rxUsePack" data-arg="0">${I.check}ใช้ค่านี้</button>${can("editPacks") ? `<button class="btn sm ghost" data-act="rxUsePack" data-arg="1">ใช้ + จำหน่วย${esc(q.need.n)}</button>` : ""}</div></div>` : ""}
+      ${q && q.need ? "" : (src.qty || src.lot || src.exp) ? `<div style="font-size:13px;color:var(--exp)">${I.check.replace("<svg", '<svg style="width:15px;height:15px;vertical-align:-2px"')} ใส่ค่าให้แล้ว — ตรวจกับของจริงก่อนกดบันทึก</div>`
+        : `<button class="btn sm m-IN" data-act="rxApply">${I.check}ใช้ค่านี้กรอกให้</button>`}
+      ${gs && gs.gtin && !gs.mapped && can("IN") ? `<button class="link" data-act="rxGtin" data-arg="${esc(gs.gtin)}" style="justify-self:start">${I.plus}จำบาร์โค้ด ${esc(gs.gtin)} ให้ยานี้ (ครั้งหน้าสแกนกล่องได้เลย)</button>` : ""}</div>`;
+  } else if (!busy && photos.some(p => p.read && p.read.items && p.read.items.length)) {
+    read = `<div class="read-line miss">${I.alert.replace("<svg", '<svg style="width:17px;height:17px;vertical-align:-3px"')} ไม่พบ “${esc(d.n)}” ในภาพ — ตรวจว่าถ่ายถูกใบ หรือแตะบรรทัดด้านล่างเพื่อใช้กับยานี้</div>`;
+  } else if (busy) read = `<div class="faint" style="font-size:13.5px;display:flex;gap:8px;align-items:center"><span class="spinner" style="width:18px;height:18px;border-width:3px;margin:0"></span>กำลังอ่านภาพ ${mode === "AI" ? "(ประมาณ 5–15 วินาที)" : ""}…</div>`;
+  const errs = photos.filter(p => p.state === "err").map(p => `<div class="warn danger" style="font-size:13px">${I.alert}<span>${esc(p.err || "อัปโหลดไม่สำเร็จ")} — แตะภาพเพื่อลองใหม่</span></div>`).join("");
+  const notes = photos.filter(p => p.state === "done" && (p.readError || (p.read && p.read.note))).map(p => `<div class="faint" style="font-size:12.5px">${esc(p.readError ? "อ่านภาพไม่สำเร็จ: " + p.readError + " — กรอกเองได้ ภาพยังเก็บเป็นหลักฐาน" : p.read.note)}</div>`).join("");
+  const dup = photos.filter(p => p.dup && p.dupMeta).map(p => `<div class="warn" style="font-size:13px">${I.alert}<span>ภาพนี้เคยอัปโหลดแล้วเมื่อ ${fmtDate(p.dupMeta.time)} โดย ${esc(p.dupMeta.by)}${(p.dupMeta.txns || []).length ? " · ผูกกับรายการรับ " + p.dupMeta.txns.length + " รายการ" : ""}</span></div>`).join("");
+  const prior = rxPrior(), mine = prior.filter(p => p.stock === s.c);
+  const priorHtml = mine.length ? `<div class="warn danger" style="font-size:13.5px">${I.alert}<span><b>เอกสาร ${esc(R.doc.no || mine[0].doc || "")} เคยลงรับยานี้แล้ว</b><br>${mine.slice(0, 3).map(p => `${fmtDate(p.time)} ${fmtTime(p.time)} · ＋${fmtN(p.qty)} ${esc(p.unit)}${p.lot ? " · Lot " + esc(p.lot) : ""} · ${esc(p.by)}`).join("<br>")}<br>ตรวจก่อนรับซ้ำ (ส่งของหลายรอบให้รับได้)</span></div>`
+    : prior.length ? `<div class="warn" style="font-size:13px">${I.alert}<span>เอกสารนี้เคยลงรับแล้ว ${prior.length} รายการ (${esc(prior.slice(0, 2).map(p => p.name).join(", "))}${prior.length > 2 ? " …" : ""}) — ตรวจว่าไม่ใช่ใบเดิม</span></div>` : "";
+  const bcWarn = otherBc ? `<div class="warn danger" style="font-size:13.5px">${I.alert}<span>บาร์โค้ดบนกล่องในภาพเป็นของ <b>${esc(otherBc.n)}</b> — ตรวจว่าหยิบ/ถ่ายถูกกล่อง</span></div>` : "";
+  const items = rxItems().filter(x => x.st !== s.c);
+  const others = items.length ? `<div class="sec-title" style="margin:2px 2px 0"><span>รายการอื่นในใบนี้ (${items.length})</span></div><div class="others">${items.slice(0, 12).map(x => {
+    const od = x.code ? S.drugs.get(x.code) : null, done = od && R.received[stockCodeOf(od.c)];
+    return od ? `<button class="o ${done ? "done" : ""}" data-act="rxOpen" data-arg="${esc(od.c)}">${ftile(od, { noPa: true })}<span class="grow"><b>${done ? "✓ " : ""}${esc(od.n)}</b><small>${x.it.qty ? fmtN(x.it.qty) + " " + esc(x.it.qtyUnit) : ""}${x.it.lot ? " · Lot " + esc(x.it.lot) : ""}${done ? " · รับแล้ว" : ""}</small></span>${I.chev}</button>`
+      : `<button class="o" data-act="rxUseLine" data-arg="${esc(x.k)}"><span class="grow"><b>${esc(x.it.name || "(ไม่มีชื่อ)")}</b><small>ไม่พบในทะเบียน${x.it.qty ? " · " + fmtN(x.it.qty) + " " + esc(x.it.qtyUnit) : ""} — แตะเพื่อใช้กับยานี้</small></span></button>`;
+  }).join("")}</div>` : "";
+  return `<div class="rx">${head}${strip}${read}${bcWarn}${priorHtml}${dup}${errs}${notes}${others}</div>`;
+}
+/* --- กล้อง / เลือกรูป --- */
+let fileIns = null, attachCtx = null;
+function fileInputs() {
+  if (fileIns) return fileIns;
+  const mk = cap => { const i = document.createElement("input"); i.type = "file"; i.accept = "image/*"; if (cap) i.setAttribute("capture", "environment"); else i.multiple = true; i.hidden = true; document.body.appendChild(i);
+    i.addEventListener("change", () => { const f = Array.from(i.files || []); i.value = ""; const ctx = attachCtx; attachCtx = null; if (f.length) addPhotos(f, ctx); }); return i; };
+  fileIns = { cam: mk(true), pick: mk(false) };
+  return fileIns;
+}
+async function loadBitmap(file) {
+  if (window.createImageBitmap) { try { return await createImageBitmap(file, { imageOrientation: "from-image" }); } catch (e) { /* fallback */ } }
+  return new Promise((res, rej) => { const url = URL.createObjectURL(file); const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error("เปิดไฟล์ภาพไม่ได้ (รองรับ JPG/PNG/HEIC จากกล้อง)")); im.src = url; });
+}
+function drawScaled(img, max) {
+  const w0 = img.width || img.naturalWidth, h0 = img.height || img.naturalHeight, k = Math.min(1, max / Math.max(w0, h0));
+  const c = document.createElement("canvas"); c.width = Math.max(1, Math.round(w0 * k)); c.height = Math.max(1, Math.round(h0 * k));
+  const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+  return c;
+}
+/** ย่อภาพให้คมพอสำหรับอ่านตัวหนังสือ (ด้านยาว 2048 px) + ภาพย่อ 360 px */
+async function prepImage(file) {
+  const bmp = await loadBitmap(file);
+  const full = drawScaled(bmp, 2048);
+  let data = full.toDataURL("image/jpeg", 0.84);
+  if (data.length > 2800000) data = full.toDataURL("image/jpeg", 0.7);
+  return { b64: data.split(",")[1], mime: "image/jpeg", thumb: drawScaled(bmp, 360).toDataURL("image/jpeg", 0.72), canvas: full };
+}
+async function addPhotos(files, attachTxn) {
+  const max = S.config.maxPhotos || 4;
+  if (!attachTxn) rxEnsure();
+  const room = attachTxn ? 4 : max - S.rx.photos.length;
+  const list = files.slice(0, Math.max(0, room));
+  if (!list.length) return toast("แนบได้สูงสุด " + max + " ภาพต่อรอบ — กด “จบรอบรับ” เพื่อเริ่มใบใหม่", true);
+  const ctxCode = S.view === "drug" && S.drug ? S.drug.code : "";
+  for (const f of list) {
+    const ph = { key: uid(), state: "prep", code: ctxCode, at: Date.now() };
+    if (!attachTxn) { S.rx.photos.push(ph); rerender(); }
+    else toast("กำลังแนบภาพ…");
+    try {
+      const img = await prepImage(f);
+      ph.thumb = img.thumb; ph.state = "up"; ph._b64 = img.b64;
+      if (!attachTxn) rerender();
+      let barcodes = [];
+      try { barcodes = await decodeBarcodes(img.canvas); } catch (e) { barcodes = []; }
+      ph.barcodes = barcodes;
+      ph.gs1 = barcodes.map(b => parseGS1(b.text)).find(Boolean) || null;
+      if (!ph.gs1) { const e = barcodes.find(b => /^(EAN|UPC)/i.test(b.format)); if (e) ph.gs1 = { gtin: normGtin(e.text) }; }
+      await uploadPhoto(ph, attachTxn);
+    } catch (e) { ph.state = "err"; ph.err = e.message; if (attachTxn) toast(e.message, true); }
+    if (!attachTxn) { persistRx(); if (ctxCode && S.view === "drug" && S.drug && S.drug.code === ctxCode) rxFill(ctxCode, true); rerender(); }
+  }
+}
+async function uploadPhoto(ph, attachTxn) {
+  ph.state = "up"; ph.err = "";
+  const r = await api("evidenceAdd", { image: ph._b64, thumb: (ph.thumb || "").split(",")[1] || "", mime: "image/jpeg", code: ph.code, read: !attachTxn, barcodes: ph.barcodes || [] });
+  Object.assign(ph, { id: r.evidence.id, state: "done", read: r.read || null, readError: r.readError || "", dup: !!r.dup, dupMeta: r.dup ? r.evidence : null, prior: r.prior || [] });
+  delete ph._b64;
+  if (attachTxn) {
+    const a = await api("evidenceAttach", { txn: attachTxn, ids: [r.evidence.id] });
+    [S.history && S.history.rows, S.recentTx, S.drug && S.drug.recent, S.card && S.card.rows].forEach(pool => (pool || []).forEach((y, i) => { if (y.id === attachTxn) pool[i] = Object.assign({}, y, a.txn, { bal: y.bal }); }));
+    toast("แนบภาพหลักฐานแล้ว");
+    return;
+  }
+  if (r.read && r.read.doc) {
+    const doc = r.read.doc, R = S.rx;
+    if (doc.no && !R.doc.no) R.doc.no = doc.no;
+    if (doc.type && !R.doc.type) R.doc.type = doc.type;
+    if (doc.supplier && !R.doc.supplier) R.doc.supplier = doc.supplier;
+  }
+}
+function rxPhotoSheet(key) {
+  const ph = S.rx && S.rx.photos.find(p => p.key === key);
+  if (!ph) return;
+  const el = openSheet(`<h3>ภาพหลักฐาน</h3>${ph.thumb ? `<img src="${ph.thumb}" alt="" style="width:100%;max-height:260px;object-fit:contain;border-radius:12px;background:#000">` : ""}
+    <p class="faint" style="font-size:13px">${ph.id ? "รหัส " + esc(ph.id) + " · " : ""}${esc(PH_LABEL[ph.state] || "")}${ph.read && ph.read.doc && ph.read.doc.type ? " · " + esc(ph.read.doc.type) : ""}${ph.barcodes && ph.barcodes.length ? " · บาร์โค้ด " + ph.barcodes.length : ""}</p>
+    ${ph.err ? `<div class="err-box">${esc(ph.err)}</div>` : ""}
+    <div class="stack" style="margin-top:10px">
+      ${ph.state === "err" && ph._b64 ? `<button class="btn m-IN" data-r="retry">${I.refresh}ลองส่งใหม่</button>` : ""}
+      ${ph.id ? `<button class="btn ghost" data-r="view">${I.search}ดูภาพเต็ม</button>` : ""}
+      <button class="btn danger sm" data-r="del">${I.x}เอาภาพนี้ออกจากรอบรับ</button></div>`);
+  el.querySelectorAll("[data-r]").forEach(b => b.addEventListener("click", async () => {
+    const r = b.dataset.r;
+    closeSheet(true);
+    if (r === "view") openViewer(ph.id, ph.thumb);
+    if (r === "del") { S.rx.photos.splice(S.rx.photos.indexOf(ph), 1); persistRx(); rerender(); toast(ph.id ? "เอาออกจากรอบนี้แล้ว (ไฟล์ยังเก็บในระบบ)" : "เอาภาพออกแล้ว"); }
+    if (r === "retry") { try { await uploadPhoto(ph); } catch (e) { ph.state = "err"; ph.err = e.message; } persistRx(); if (S.drug) rxFill(S.drug.code, true); rerender(); }
+  }));
+}
+function rxSheet() {
+  const R = S.rx;
+  if (!R) return;
+  const items = rxItems();
+  const el = openSheet(`<h3>รอบรับของ${R.doc.no ? " · " + esc(R.doc.no) : ""}</h3>
+    <p class="faint" style="font-size:13px;margin:0 0 10px">${esc([R.doc.type, R.doc.supplier].filter(Boolean).join(" · ") || "จากภาพที่ถ่าย")} · ${R.photos.length} ภาพ</p>
+    ${items.length ? `<div class="others">${items.map(x => { const od = x.code ? S.drugs.get(x.code) : null, done = od && R.received[stockCodeOf(od.c)];
+      return od ? `<button class="o ${done ? "done" : ""}" data-c="${esc(od.c)}">${ftile(od, { noPa: true })}<span class="grow"><b>${done ? "✓ " : ""}${esc(od.n)}</b><small>${x.it.qty ? fmtN(x.it.qty) + " " + esc(x.it.qtyUnit) : ""}${x.it.lot ? " · Lot " + esc(x.it.lot) : ""}${done ? " · รับแล้ว" : ""}</small></span>${I.chev}</button>`
+        : `<div class="o"><span class="grow"><b>${esc(x.it.name || "(ไม่มีชื่อ)")}</b><small>ไม่พบในทะเบียน — ค้นหาแล้วรับเข้าเอง</small></span></div>`; }).join("")}</div>`
+      : `<div class="empty">ยังไม่มีรายการที่อ่านได้</div>`}
+    <button class="btn soft" style="margin-top:12px" data-r="end">${I.x}จบรอบรับ (ล้างภาพจากหน้าจอ)</button>`);
+  el.querySelectorAll("[data-c]").forEach(b => b.addEventListener("click", () => { closeSheet(true); S.mode = "IN"; store.set("mode", "IN"); openDrug(b.dataset.c); }));
+  el.querySelector('[data-r="end"]').addEventListener("click", () => { closeSheet(true); rxEnd(); });
+}
+async function rxEnd() {
+  const R = S.rx;
+  if (!R) return;
+  const items = rxItems().filter(x => x.code && !R.received[stockCodeOf(x.code)]);
+  if (items.length && !(await confirmSheet("จบรอบรับ?", `ยังไม่ได้ลงรับ ${items.length} รายการที่อ่านได้จากภาพ (${esc(items.slice(0, 2).map(x => S.drugs.get(x.code).n).join(", "))}${items.length > 2 ? " …" : ""})<br>ภาพยังเก็บในระบบ แนบเพิ่มภายหลังได้จากประวัติ`, "จบรอบรับ", "danger"))) return;
+  S.rx = null; persistRx();
+  if (S.drug) { S.drug.src = {}; }
+  toast("จบรอบรับแล้ว"); rerender();
+}
+function rxBanner() {
+  const R = S.rx;
+  if (!R || !R.photos.length || S.mode !== "IN") return "";
+  const items = rxItems().filter(x => x.code), done = items.filter(x => R.received[stockCodeOf(x.code)]).length;
+  return `<button class="warn" data-act="rxSheet" style="width:100%;text-align:left;background:var(--in-soft);color:var(--in)">${I.camera}<span>รอบรับของ${R.doc.no ? " " + esc(R.doc.no) : ""} · ${R.photos.length} ภาพ${items.length ? ` · รับแล้ว ${done}/${items.length} รายการ` : ""} — แตะเพื่อดูรายการถัดไป</span></button>`;
+}
+/** ภาพหลักฐานของรายการ (ใช้ในหน้าประวัติ/บัตรคลัง) */
+const evCache = {};
+async function evThumb(id) {
+  if (evCache[id]) return evCache[id];
+  const r = await api("evidenceGet", { id, size: "thumb" });
+  return (evCache[id] = "data:" + r.mime + ";base64," + r.data);
+}
+async function openViewer(id, preview) {
+  const wrap = document.createElement("div");
+  wrap.className = "viewer";
+  wrap.innerHTML = `<header><b>ภาพหลักฐาน</b><span class="faint" id="vw-meta"></span><button class="icon-btn" style="background:rgba(255,255,255,.15);color:#fff" aria-label="ปิด">${I.x}</button></header>
+    <div class="pic">${preview ? `<img src="${preview}" alt="">` : `<div class="spinner"></div>`}</div><footer>${esc(id || "")}</footer>`;
+  document.body.appendChild(wrap);
+  wrap.querySelector("header button").onclick = () => wrap.remove();
+  if (!id) return;
+  try {
+    const r = await api("evidenceGet", { id });
+    if (!wrap.isConnected) return;
+    wrap.querySelector(".pic").innerHTML = `<img src="data:${r.mime};base64,${r.data}" alt="ภาพหลักฐาน">`;
+    const m = r.meta || {};
+    wrap.querySelector("#vw-meta").textContent = [m.kind, m.doc, m.by, m.time ? fmtDate(m.time) + " " + fmtTime(m.time) : ""].filter(Boolean).join(" · ");
+    wrap.querySelector("footer").textContent = id + ((m.txns || []).length ? " · ผูกกับรายการรับ " + m.txns.length + " รายการ" : "");
+  } catch (e) { if (wrap.isConnected) wrap.querySelector(".pic").innerHTML = `<div class="err-box" style="margin:16px">${esc(e.message)}</div>`; }
+}
+/** ภาพของรอบนี้ที่เกี่ยวกับยานี้: ภาพเอกสาร + ภาพกล่องของยานี้ (ไม่แนบภาพกล่องของยาอื่น) */
+function rxEvidenceFor(code) {
+  if (!S.rx) return [];
+  const st = stockCodeOf(code);
+  return S.rx.photos.filter(ph => ph.id && ph.state === "done" && (
+    (ph.code && stockCodeOf(ph.code) === st) ||
+    (ph.read && ph.read.doc && ph.read.doc.type && ph.read.doc.type !== "กล่องยา/ฉลาก") ||
+    (ph.read && (ph.read.items || []).some(it => it.match && stockCodeOf(it.match.code) === st)) ||
+    (!ph.read && !ph.code))).map(ph => ph.id);
+}
+
+async function confirmReceiveDup(d, s) {
+  const doc = S.doc.trim(), R = S.rx, st = s.c, session = R && R.received[st];
+  let prior = rxPrior().filter(p => p.stock === st);
+  if (!prior.length && doc && navigator.onLine !== false) {
+    try { const r = await Promise.race([api("docCheck", { doc }), new Promise((_, j) => setTimeout(() => j(new Error("timeout")), 4000))]); prior = (r.prior || []).filter(p => p.stock === st); }
+    catch (e) { prior = []; }
+  }
+  if (!prior.length && !session) return true;
+  const list = prior.slice(0, 3).map(p => `${fmtDate(p.time)} ${fmtTime(p.time)} · ＋${fmtN(p.qty)} ${esc(p.unit)}${p.lot ? " · Lot " + esc(p.lot) : ""} · ${esc(p.by)}`).join("<br>");
+  return confirmSheet(prior.length ? "เอกสารนี้เคยลงรับยานี้แล้ว" : "รอบนี้รับยานี้ไปแล้ว",
+    (prior.length ? `ใบ <b>${esc(doc || (R && R.doc.no) || "")}</b> ลงรับ <b>${esc(d.n)}</b> ไปแล้ว:<br>${list}<br><br>` : `รอบรับนี้บันทึกรับ ${esc(d.n)} ไปแล้ว ${fmtN(session.qty)} ${esc(s.u)}<br><br>`) +
+    "ยืนยันรับเพิ่มอีกครั้งใช่หรือไม่? (เช่น ของส่งหลายรอบ)", "ยืนยันรับเพิ่ม", "m-IN");
+}
+function rxNext(code) {
+  if (!S.rx) return null;
+  const st = stockCodeOf(code);
+  const x = rxItems().find(y => y.code && y.st !== st && !S.rx.received[y.st]);
+  return x ? S.drugs.get(x.code) : null;
+}
+
+/* ========================= events ========================= */
+const ACT = {
+  go: v => { if (v === "search") S.zf = S.zf || ""; go(v); },
+  back: () => back(),
+  scan: () => scan(),
+  open: c => openDrug(c),
+  homeMode: m => { S.mode = m; store.set("mode", m); render(); },
+  drugMode: m => { S.mode = m; store.set("mode", m); S.drug.counts = {}; S.drug.src = {}; if (m === "IN" && S.rx) rxFill(S.drug.code, true); refreshDrugView(); },
+  pickDest: k => destSheet(k, k === "OUT" ? S.destOut : S.destIn, n => { if (k === "OUT") { S.destOut = n; store.set("destOut", n); } else { S.destIn = n; store.set("destIn", n); } S.view === "drug" ? refreshDrugView() : render(); }),
+  key: k => {
+    const D = S.drug, s = stockOf(S.drugs.get(D.code));
+    const U = unitsOf(s);
+    if (!U.some(u => u.k === D.ui)) D.ui = "base";
+    const v = D.counts[D.ui] || "";
+    if (D.src) delete D.src.qty;
+    if (k === "C") { if (v) delete D.counts[D.ui]; else D.counts = {}; }
+    else if (k === "B") { const nv = v.slice(0, -1); if (nv) D.counts[D.ui] = nv; else delete D.counts[D.ui]; }
+    else if (v.length < 8) D.counts[D.ui] = (v === "0" ? "" : v) + k;
+    refreshDrugView();
+  },
+  unit: k => {
+    S.drug.ui = k;
+    const pref = store.get("unitPref", {}) || {};
+    pref[S.drug.code] = k; store.set("unitPref", pref);
+    refreshDrugView();
+  },
+  packEditor: () => packEditor(),
+  paDone: id => { const p = (S.putaway || []).find(x => x.id === id); putawayConfirm({ ids: [id], method: "button" }, p ? p.name : ""); },
+  paDrug: c => putawayConfirm({ code: c, method: "button" }, (S.drugs.get(c) || {}).n || c),
+  paScan: () => putawayScan(),
+  paRefresh: () => { refreshPending(true); toast("กำลังอัปเดต…"); },
+  rxCam: () => { attachCtx = null; fileInputs().cam.click(); },
+  rxPick: () => { attachCtx = null; fileInputs().pick.click(); },
+  rxPhoto: k => rxPhotoSheet(k),
+  rxApply: () => { if (rxFill(S.drug.code, false)) refreshDrugView(); else toast("ไม่มีค่าที่อ่านได้สำหรับยานี้", true); },
+  rxUsePack: async save => {
+    const D = S.drug, s = stockOf(S.drugs.get(D.code)), line = rxLineFor(D.code);
+    const q = line && resolveQty(line.it, s);
+    if (!q || !q.need) return;
+    const inp = document.getElementById("rx-pq"), per = Number(String((inp && inp.value) || "").replace(/,/g, ""));
+    if (!(per >= 2) || Math.round(per) !== per) return toast("ใส่จำนวนต่อ 1 " + q.need.n + " เป็นจำนวนเต็ม 2 ขึ้นไป", true);
+    if (save === "1") {
+      const packs = (s.ps || []).filter(p => p.n !== q.need.n).map(p => ({ n: p.n, q: p.q })).concat([{ n: q.need.n, q: per }]);
+      if (packs.length > 4) return toast("หน่วยบรรจุครบ 4 หน่วยแล้ว — กด “ใช้ค่านี้” แทน", true);
+      try { const r = await api("updateDrug", { code: s.c, packs, reason: "ตั้งหน่วยบรรจุจากเอกสารรับเข้า" }); const x = S.drugs.get(r.drug.c); if (x) Object.assign(x, r.drug, { _k: x._k }); }
+      catch (e) { return toast(e.message, true); }
+      const u = unitsOf(stockOf(S.drugs.get(D.code))).find(y => y.n === q.need.n && y.q === per);
+      D.counts = { [u.k]: String(q.qty) }; D.ui = u.k;
+      toast("จำ 1 " + q.need.n + " = " + fmtN(per) + " " + s.u + " แล้ว");
+    } else { D.counts = { base: String(round2(q.qty * per)) }; D.ui = "base"; }
+    D.src = D.src || {}; D.src.qty = "ai";
+    rxFill(D.code, true);
+    refreshDrugView();
+  },
+  rxGtin: async g => {
+    try {
+      const r = await api("updateDrug", { code: S.drug.code, addGtin: g, reason: "จำบาร์โค้ดจากภาพรับเข้า" });
+      const x = S.drugs.get(r.drug.c); if (x) Object.assign(x, r.drug, { _k: x._k });
+      setDrugs(S.list); toast("จำบาร์โค้ดแล้ว — ครั้งหน้าสแกนกล่องยาเปิดรายการนี้ได้ทันที"); refreshDrugView();
+    } catch (e) { toast(e.message, true); }
+  },
+  rxOpen: c => openDrug(c),
+  rxUseLine: k => { S.rx.map[k] = S.drug.code; persistRx(); rxFill(S.drug.code, false); refreshDrugView(); },
+  rxEnd: () => rxEnd(),
+  rxSheet: () => rxSheet(),
+  evView: id => openViewer(id),
+  save: () => doSave(),
+  editTx: id => editTx(id),
+  openQueued: id => openQueued(id),
+  histScope: v => { S.histScope = v; loadHistory(); render(); },
+  openAlerts: tab => { S.alertTab = tab; go("alerts"); },
+  alertTab: tab => { S.alertTab = tab; render(); },
+  refreshAlerts: () => { loadAlerts(); if (S.view !== "alerts") toast("กำลังอัปเดต…"); },
+  zf: z => { S.zf = S.zf === z ? "" : z; render(); },
+  clearSearch: () => { S.search = ""; store.set("lastSearch", ""); render(); },
+  togglePick: c => {
+    const i = S.pick.findIndex(p => p.c === c);
+    if (i >= 0) S.pick.splice(i, 1); else S.pick.push({ c, done: false });
+    store.set("pick", S.pick);
+    const y = window.scrollY; render(); window.scrollTo(0, y);
+    if (i < 0) toast("เพิ่มในรายการหยิบแล้ว (" + S.pick.length + ")");
+  },
+  clearPick: async () => { if (await confirmSheet("ล้างรายการหยิบ?", "ลบรายการหยิบทั้งหมดในเครื่องนี้", "ล้างรายการ", "danger")) { S.pick = []; store.set("pick", []); render(); } },
+  openCard: () => openCard(),
+  editDrug: () => editDrug(),
+  print: () => { try { window.print(); } catch (e) { toast("พิมพ์จากหน้านี้ไม่ได้", true); } },
+  toggleSetting: k => { S.settings[k] = !S.settings[k]; store.set("settings", S.settings); render(); },
+  reload: () => { if (S.demo) { boot(); } else location.reload(); },
+  register: async () => {
+    const name = $("#r-name").value.trim(), invite = $("#r-inv").value.trim();
+    if (!invite && name.length < 2) return renderRegister("กรุณากรอกชื่อ-สกุล หรือรหัสเชิญ");
+    renderLoading("กำลังลงทะเบียน…");
+    try { const r = await api("register", { name, invite }); if (r.status === "ใช้งาน") boot(); else renderPending(); }
+    catch (e) { renderRegister(e.message); }
+  },
+  demoRole: r => { Demo.setRole(r); navStack = []; boot(); },
+  demoReset: () => { Demo.reset(); navStack = []; boot(); }
+};
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]");
+  if (!el || el.closest(".sheet")) return;
+  const fn = ACT[el.dataset.act];
+  if (fn) { e.preventDefault(); fn(el.dataset.arg, el, e); }
+});
+let searchTimer;
+document.addEventListener("input", e => {
+  const k = e.target.dataset && e.target.dataset.input;
+  if (!k) return;
+  if (k === "search") {
+    S.search = e.target.value;
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => { store.set("lastSearch", S.search); const pos = e.target.selectionStart; render(); const i = $("#q"); if (i) { i.focus(); try { i.setSelectionRange(pos, pos); } catch (x) { /* */ } } }, 180);
+  }
+  if (k === "lot") { S.drug.lot = e.target.value; if (S.drug.src) delete S.drug.src.lot; e.target.classList.remove("from-img"); }
+  if (k === "doc") { S.doc = e.target.value; store.set("doc", S.doc); if (S.drug && S.drug.src) delete S.drug.src.doc; e.target.classList.remove("from-img"); }
+  if (k === "exp") {
+    let v = e.target.value.replace(/[^\d\/]/g, "");
+    if (/^\d{3,}$/.test(v)) v = v.slice(0, 2) + "/" + v.slice(2, 6);
+    e.target.value = v; S.drug.exp = v; if (S.drug.src) delete S.drug.src.exp; e.target.classList.remove("from-img");
+    const ep = parseExp(v), h = $("#exp-hint");
+    if (h) { const ml = ep ? monthsLeft(ep) : null; h.className = "hint " + (v ? (ep ? (ml < 6 ? "bad" : "ok") : "bad") : ""); h.textContent = v ? (ep ? fmtExp(ep) + " · อีก " + ml + " เดือน" + (ml < 6 ? " (สั้น!)" : "") : "รูปแบบไม่ถูกต้อง") : "พ.ศ. หรือ ค.ศ. ก็ได้"; }
+    const btn = document.querySelector('[data-act="save"]');
+    if (btn && qtyEntered(S.drug) && S.mode === "IN" && S.destIn) btn.disabled = !!(v && !ep);
+  }
+});
+document.addEventListener("change", e => { if (e.target.dataset && e.target.dataset.input === "exp") refreshDrugView(); });
+window.addEventListener("online", () => processOutbox());
+
+const Demo = { load() { throw new Error("ไม่มีข้อมูลสาธิต"); }, call() { throw new ApiError("ไม่ได้อยู่ในโหมดสาธิต", "DEMO"); }, setRole() {}, reset() {}, sample() { return []; } };
+function demoScanSheet() {}
+
+init();
+</script>
+</body>
+</html>
